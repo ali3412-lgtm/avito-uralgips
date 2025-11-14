@@ -47,8 +47,8 @@ require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/admin-menu.php';
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/category-export-field.php';
 // Динамические поля на основе настроек
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/dynamic-category-fields.php';
-// Поле экспорта для товаров (только чекбокс)
-// require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/product-export-field.php'; // ОТКЛЮЧЕНО - контроль через категории
+// Поле экспорта для товаров (чекбокс для индивидуального контроля)
+require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/product-export-field.php';
 // require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/dynamic-product-fields.php'; // ОТКЛЮЧЕНО - только поле экспорта
 // require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/product-fields.php'; // ОТКЛЮЧЕНО - заменено на динамические поля
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/xml-generator.php';
@@ -140,6 +140,7 @@ function wc_avito_vdom_woocommerce_notice() {
 function wc_avito_xml_register_settings() {
     // Основные настройки экспорта
     register_setting('wc_avito_xml_options', 'wc_avito_xml_enable_products');
+    register_setting('wc_avito_xml_options', 'wc_avito_individual_product_export');
     
     // Контактная информация
     register_setting('wc_avito_xml_options', 'wc_avito_xml_contact_phone');
