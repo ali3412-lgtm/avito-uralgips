@@ -105,6 +105,42 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
         }
     }
     
+    // Добавляем пользовательские поля категории (если есть)
+    if ($category_id) {
+        $custom_fields = get_term_meta($category_id, 'avito_category_custom_fields', true);
+        
+        if (!empty($custom_fields) && is_array($custom_fields)) {
+            foreach ($custom_fields as $field) {
+                $xml_tag = isset($field['xml_tag']) ? $field['xml_tag'] : '';
+                $value = isset($field['value']) ? $field['value'] : '';
+                
+                // Пропускаем пустые поля
+                if (empty($xml_tag) || empty($value)) {
+                    continue;
+                }
+                
+                // Обрабатываем плейсхолдеры
+                $value = wc_avito_process_placeholders($value, $product, $category_id);
+                
+                if (!empty($value)) {
+                    // Специальная обработка для Description - используем CDATA и prepare_description
+                    if ($xml_tag === 'Description') {
+                        $description_node = $ad->addChild($xml_tag);
+                        $description_cdata = dom_import_simplexml($description_node);
+                        $description_cdata->appendChild($description_cdata->ownerDocument->createCDATASection(prepare_description($value)));
+                    } elseif (preg_match('/<[^>]+>/', $value)) {
+                        // Если значение содержит HTML теги, используем CDATA
+                        $node = $ad->addChild($xml_tag);
+                        $cdata = dom_import_simplexml($node);
+                        $cdata->appendChild($cdata->ownerDocument->createCDATASection($value));
+                    } else {
+                        $ad->addChild($xml_tag, htmlspecialchars($value));
+                    }
+                }
+            }
+        }
+    }
+    
     /* Поля товаров отключены - используются только глобальные настройки
     // Добавляем поля товара (если есть)
     if ($product && !empty($settings['product_fields'])) {
