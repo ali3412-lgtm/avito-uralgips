@@ -34,6 +34,9 @@ function wc_avito_xml_page() {
     if (isset($_POST['save_settings'])) {
         // Сохранение настроек экспорта товаров
         update_option('wc_avito_xml_enable_products', isset($_POST['wc_avito_xml_enable_products']) ? '1' : '0');
+        
+        // Настройка индивидуального контроля экспорта товаров
+        update_option('wc_avito_individual_product_export', isset($_POST['wc_avito_individual_product_export']) ? '1' : '0');
 
         // Настройки расписания
         update_option('wc_avito_xml_schedule_enabled', isset($_POST['wc_avito_xml_schedule_enabled']) ? '1' : '0');
@@ -65,6 +68,18 @@ function wc_avito_xml_page() {
                 <tr valign="top">
                     <th scope="row">Активировать экспорт товаров</th>
                     <td><input type="checkbox" name="wc_avito_xml_enable_products" value="1" <?php checked(get_option('wc_avito_xml_enable_products', '1'), '1'); ?> /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Индивидуальный контроль экспорта</th>
+                    <td>
+                        <input type="checkbox" name="wc_avito_individual_product_export" value="1" <?php checked(get_option('wc_avito_individual_product_export', '0'), '1'); ?> />
+                        <p class="description">
+                            Если включено, для каждого товара потребуется отдельно установить флаг "Экспорт на Avito" на странице редактирования товара.<br>
+                            <strong>Режим работы:</strong> Товар экспортируется только если:<br>
+                            • Категория товара включена в экспорт<br>
+                            • <strong>И</strong> у товара установлен флаг "Экспорт на Avito" (если этот режим включен)
+                        </p>
+                    </td>
                 </tr>
             </table>
 

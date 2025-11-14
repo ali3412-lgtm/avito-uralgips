@@ -64,7 +64,22 @@ function generate_avito_xml() {
                     }
                 }
                 
-                // Экспортируем только если товар в категории с включенным экспортом
+                // Если включен режим индивидуального контроля, проверяем флаг товара
+                if ($should_export) {
+                    $individual_mode = get_option('wc_avito_individual_product_export', '0');
+                    
+                    if ($individual_mode === '1') {
+                        // В индивидуальном режиме проверяем метаполе товара
+                        $product_export_enabled = get_post_meta($product->get_id(), '_avito_export_enabled', true);
+                        
+                        // Экспортируем только если явно установлен флаг 'yes'
+                        if ($product_export_enabled !== 'yes') {
+                            $should_export = false;
+                        }
+                    }
+                }
+                
+                // Экспортируем только если товар прошел все проверки
                 if ($should_export) {
                     add_product_ad($xml, $product, true);
                 }
