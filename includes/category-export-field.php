@@ -116,12 +116,12 @@ function wc_avito_edit_category_export_field($term) {
                 <h4 style="margin: 10px 0;">Пользовательские поля категории</h4>
                 <p>Добавьте индивидуальные XML-поля, которые будут применяться только к этой категории. Поддерживаются плейсхолдеры.</p>
 
-                <table class="widefat avito-category-custom-fields" style="max-width: 700px;">
+                <table class="widefat avito-category-custom-fields">
                     <thead>
                         <tr>
-                            <th style="width: 30%;">XML тег</th>
-                            <th>Значение</th>
-                            <th style="width: 60px; text-align: center;">Удалить</th>
+                            <th style="width: 25%;">XML тег</th>
+                            <th style="width: 65%;">Значение</th>
+                            <th style="width: 10%; text-align: center;">Удалить</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,14 +131,14 @@ function wc_avito_edit_category_export_field($term) {
                                 $value = isset($field['value']) ? $field['value'] : '';
                             ?>
                                 <tr>
-                                    <td>
-                                        <input type="text" name="avito_category_custom_fields[<?php echo esc_attr($index); ?>][xml_tag]" value="<?php echo esc_attr($xml_tag); ?>" placeholder="Например, DeliveryCost" class="regular-text" />
+                                    <td style="padding: 10px;">
+                                        <input type="text" name="avito_category_custom_fields[<?php echo esc_attr($index); ?>][xml_tag]" value="<?php echo esc_attr($xml_tag); ?>" placeholder="Например, Condition" style="width: 100%;" />
                                     </td>
-                                    <td>
+                                    <td style="padding: 10px;">
                                         <textarea name="avito_category_custom_fields[<?php echo esc_attr($index); ?>][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"><?php echo esc_textarea($value); ?></textarea>
                                     </td>
-                                    <td style="text-align: center;">
-                                        <button type="button" class="button button-link-delete avito-remove-custom-field">×</button>
+                                    <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                                        <button type="button" class="button avito-remove-custom-field" title="Удалить поле">×</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -161,14 +161,14 @@ function wc_avito_edit_category_export_field($term) {
 
     <script type="text/html" id="tmpl-avito-category-custom-field-row">
         <tr>
-            <td>
-                <input type="text" name="avito_category_custom_fields[{{data.index}}][xml_tag]" value="" placeholder="Например, Condition" class="regular-text" />
+            <td style="padding: 10px;">
+                <input type="text" name="avito_category_custom_fields[{{data.index}}][xml_tag]" value="" placeholder="Например, Condition" style="width: 100%;" />
             </td>
-            <td>
+            <td style="padding: 10px;">
                 <textarea name="avito_category_custom_fields[{{data.index}}][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"></textarea>
             </td>
-            <td style="text-align: center;">
-                <button type="button" class="button button-link-delete avito-remove-custom-field">×</button>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <button type="button" class="button avito-remove-custom-field" title="Удалить поле">×</button>
             </td>
         </tr>
     </script>
@@ -196,17 +196,67 @@ function wc_avito_edit_category_export_field($term) {
     </script>
 
     <style>
+    .avito-category-custom-fields {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 900px;
+        margin: 10px 0;
+    }
+    .avito-category-custom-fields thead th {
+        background: #f9f9f9;
+        font-weight: 600;
+        padding: 12px 10px;
+        border-bottom: 2px solid #ddd;
+    }
+    .avito-category-custom-fields tbody td {
+        padding: 10px;
+        vertical-align: top;
+        border-bottom: 1px solid #ddd;
+    }
+    .avito-category-custom-fields input[type="text"],
+    .avito-category-custom-fields textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 13px;
+    }
     .avito-category-custom-fields textarea {
         resize: vertical;
+        min-height: 50px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     }
-    .avito-category-custom-fields .button-link-delete {
+    .avito-category-custom-fields input[type="text"]:focus,
+    .avito-category-custom-fields textarea:focus {
+        border-color: #2271b1;
+        outline: none;
+        box-shadow: 0 0 0 1px #2271b1;
+    }
+    .avito-category-custom-fields .avito-remove-custom-field {
         color: #b32d2e;
-        font-size: 20px;
+        font-size: 22px;
         line-height: 1;
-        padding: 0;
+        padding: 4px 10px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 3px;
+        font-weight: bold;
     }
-    .avito-category-custom-fields .button-link-delete:hover {
-        color: #dc3232;
+    .avito-category-custom-fields .avito-remove-custom-field:hover {
+        color: #fff;
+        background: #dc3232;
+        border-color: #dc3232;
+    }
+    .avito-category-custom-fields .avito-no-custom-fields td {
+        padding: 30px;
+        text-align: center;
+        color: #999;
+        font-style: italic;
+    }
+    #avito-add-custom-field {
+        margin-top: 10px;
     }
     </style>
     <?php
