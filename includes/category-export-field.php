@@ -28,7 +28,6 @@ function wc_avito_add_category_export_field() {
 add_action('product_cat_edit_form_fields', 'wc_avito_edit_category_export_field', 10, 2);
 
 function wc_avito_edit_category_export_field($term) {
-    $avito_export = get_term_meta($term->term_id, 'avito_export', true);
     $avito_title_template = get_term_meta($term->term_id, 'avito_title_template', true);
     $custom_fields = get_term_meta($term->term_id, 'avito_category_custom_fields', true);
     if (!is_array($custom_fields)) {
@@ -41,14 +40,6 @@ function wc_avito_edit_category_export_field($term) {
         </th>
         <td>
             <div style="border: 1px solid #ddd; padding: 15px; background: #f9f9f9;">
-                <div style="margin-bottom: 15px;">
-                    <label for="avito_export">
-                        <input type="checkbox" name="avito_export" id="avito_export" value="yes" <?php checked($avito_export, 'yes'); ?> />
-                        <strong>Экспорт на Avito</strong>
-                    </label>
-                    <p class="description">Если отмечено, все товары из этой категории будут экспортироваться в XML для Avito. По умолчанию экспорт отключен.</p>
-                </div>
-                
                 <div style="margin-bottom: 15px;">
                     <label for="avito_title_template"><strong>Шаблон заголовка (Title)</strong></label><br>
                     <input type="text" name="avito_title_template" id="avito_title_template" value="<?php echo esc_attr($avito_title_template); ?>" class="regular-text" placeholder="{product_name}" style="width: 100%; max-width: 500px;" />
@@ -279,14 +270,6 @@ function wc_avito_save_category_export_field($term_id) {
 add_action('edited_product_cat', 'wc_avito_update_category_export_field', 10, 2);
 
 function wc_avito_update_category_export_field($term_id) {
-    // Сохраняем статус экспорта
-    if (isset($_POST['avito_export']) && $_POST['avito_export'] === 'yes') {
-        update_term_meta($term_id, 'avito_export', 'yes');
-    } else {
-        // Явно сохраняем 'no', если не отмечено
-        update_term_meta($term_id, 'avito_export', 'no');
-    }
-    
     // Сохраняем шаблон заголовка (разрешаем HTML теги)
     if (isset($_POST['avito_title_template'])) {
         update_term_meta($term_id, 'avito_title_template', wp_kses_post($_POST['avito_title_template']));
@@ -322,28 +305,6 @@ function wc_avito_update_category_export_field($term_id) {
 }
 
 /**
- * Добавляем колонку "Экспорт на Avito" в список категорий
+ * Колонка "Экспорт на Avito" удалена из списка категорий
+ * Контроль экспорта теперь осуществляется через индивидуальные настройки товаров
  */
-add_filter('manage_edit-product_cat_columns', 'wc_avito_add_category_export_column');
-
-function wc_avito_add_category_export_column($columns) {
-    $columns['avito_export'] = 'Экспорт на Avito';
-    return $columns;
-}
-
-/**
- * Заполняем колонку "Экспорт на Avito" в списке категорий
- */
-add_filter('manage_product_cat_custom_column', 'wc_avito_fill_category_export_column', 10, 3);
-
-function wc_avito_fill_category_export_column($content, $column_name, $term_id) {
-    if ($column_name === 'avito_export') {
-        $avito_export = get_term_meta($term_id, 'avito_export', true);
-        if ($avito_export === 'yes') {
-            $content = '<span style="color: green;">✓ Включен</span>';
-        } else {
-            $content = '<span style="color: #999;">✗ Отключен</span>';
-        }
-    }
-    return $content;
-}

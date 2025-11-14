@@ -31,7 +31,7 @@ function wc_avito_add_export_checkbox() {
     woocommerce_wp_checkbox(array(
         'id' => '_avito_export_enabled',
         'label' => 'Экспорт на Avito',
-        'description' => 'Отметьте, если этот товар должен быть экспортирован в XML для Avito. Также требуется, чтобы категория товара была включена в экспорт.',
+        'description' => 'Отметьте, если этот товар должен быть экспортирован в XML для Avito.',
         'desc_tip' => false
     ));
     

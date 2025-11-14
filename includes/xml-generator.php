@@ -50,36 +50,23 @@ function generate_avito_xml() {
             ));
             
             foreach ($products as $product) {
-                // Проверяем, принадлежит ли товар категории с включенным экспортом
-                $should_export = false;
-                $category_ids = $product->get_category_ids();
-                
-                if (!empty($category_ids)) {
-                    foreach ($category_ids as $category_id) {
-                        $avito_export = get_term_meta($category_id, 'avito_export', true);
-                        if ($avito_export === 'yes') {
-                            $should_export = true;
-                            break; // Достаточно одной категории с включенным экспортом
-                        }
-                    }
-                }
+                // По умолчанию все товары экспортируются
+                $should_export = true;
                 
                 // Если включен режим индивидуального контроля, проверяем флаг товара
-                if ($should_export) {
-                    $individual_mode = get_option('wc_avito_individual_product_export', '0');
+                $individual_mode = get_option('wc_avito_individual_product_export', '0');
+                
+                if ($individual_mode === '1') {
+                    // В индивидуальном режиме проверяем метаполе товара
+                    $product_export_enabled = get_post_meta($product->get_id(), '_avito_export_enabled', true);
                     
-                    if ($individual_mode === '1') {
-                        // В индивидуальном режиме проверяем метаполе товара
-                        $product_export_enabled = get_post_meta($product->get_id(), '_avito_export_enabled', true);
-                        
-                        // Экспортируем только если явно установлен флаг 'yes'
-                        if ($product_export_enabled !== 'yes') {
-                            $should_export = false;
-                        }
+                    // Экспортируем только если явно установлен флаг 'yes'
+                    if ($product_export_enabled !== 'yes') {
+                        $should_export = false;
                     }
                 }
                 
-                // Экспортируем только если товар прошел все проверки
+                // Экспортируем товар
                 if ($should_export) {
                     add_product_ad($xml, $product, true);
                 }

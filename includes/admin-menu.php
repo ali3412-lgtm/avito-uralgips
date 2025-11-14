@@ -75,9 +75,9 @@ function wc_avito_xml_page() {
                         <input type="checkbox" name="wc_avito_individual_product_export" value="1" <?php checked(get_option('wc_avito_individual_product_export', '0'), '1'); ?> />
                         <p class="description">
                             Если включено, для каждого товара потребуется отдельно установить флаг "Экспорт на Avito" на странице редактирования товара.<br>
-                            <strong>Режим работы:</strong> Товар экспортируется только если:<br>
-                            • Категория товара включена в экспорт<br>
-                            • <strong>И</strong> у товара установлен флаг "Экспорт на Avito" (если этот режим включен)
+                            <strong>Режим работы:</strong><br>
+                            • <strong>Выключен</strong> (по умолчанию): Экспортируются все опубликованные товары<br>
+                            • <strong>Включен</strong>: Экспортируются только товары с установленным флагом "Экспорт на Avito"
                         </p>
                     </td>
                 </tr>
