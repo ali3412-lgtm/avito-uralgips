@@ -1,0 +1,3 @@
+## 2024-05-22 - [WordPress Admin Settings Accessibility]
+**Learning:** WordPress `form-table` structure often lacks explicit `label` tags for inputs inside `td`, relying on visual association with `th`. Screen readers need explicit `label` with `for` attribute or `aria-labelledby`. Also, helper text is often just a `<p>` below the input, which is not programmatically associated.
+**Action:** Always wrap the text in `th` with `<label for="input_id">`, add `id` to the input, and use `aria-describedby` pointing to the description's ID for helper text. Use semantic lists instead of `<br>` for structured descriptions.

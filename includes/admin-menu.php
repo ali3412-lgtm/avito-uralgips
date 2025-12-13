@@ -66,19 +66,21 @@ function wc_avito_xml_page() {
             <h2>Настройки экспорта</h2>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row">Активировать экспорт товаров</th>
-                    <td><input type="checkbox" name="wc_avito_xml_enable_products" value="1" <?php checked(get_option('wc_avito_xml_enable_products', '1'), '1'); ?> /></td>
+                    <th scope="row"><label for="wc_avito_xml_enable_products">Активировать экспорт товаров</label></th>
+                    <td><input type="checkbox" id="wc_avito_xml_enable_products" name="wc_avito_xml_enable_products" value="1" <?php checked(get_option('wc_avito_xml_enable_products', '1'), '1'); ?> /></td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row">Индивидуальный контроль экспорта</th>
+                    <th scope="row"><label for="wc_avito_individual_product_export">Индивидуальный контроль экспорта</label></th>
                     <td>
-                        <input type="checkbox" name="wc_avito_individual_product_export" value="1" <?php checked(get_option('wc_avito_individual_product_export', '0'), '1'); ?> />
-                        <p class="description">
-                            Если включено, для каждого товара потребуется отдельно установить флаг "Экспорт на Avito" на странице редактирования товара.<br>
-                            <strong>Режим работы:</strong><br>
-                            • <strong>Выключен</strong> (по умолчанию): Экспортируются все опубликованные товары<br>
-                            • <strong>Включен</strong>: Экспортируются только товары с установленным флагом "Экспорт на Avito"
-                        </p>
+                        <input type="checkbox" id="wc_avito_individual_product_export" name="wc_avito_individual_product_export" value="1" aria-describedby="wc_avito_individual_product_export_desc" <?php checked(get_option('wc_avito_individual_product_export', '0'), '1'); ?> />
+                        <div id="wc_avito_individual_product_export_desc" class="description">
+                            <p>Если включено, для каждого товара потребуется отдельно установить флаг "Экспорт на Avito" на странице редактирования товара.</p>
+                            <strong>Режим работы:</strong>
+                            <ul style="list-style-type: disc; margin-left: 20px; margin-top: 5px;">
+                                <li><strong>Выключен</strong> (по умолчанию): Экспортируются все опубликованные товары</li>
+                                <li><strong>Включен</strong>: Экспортируются только товары с установленным флагом "Экспорт на Avito"</li>
+                            </ul>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -89,16 +91,16 @@ function wc_avito_xml_page() {
             <h2>Настройки автоматической генерации</h2>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row">Автоматическая генерация XML</th>
+                    <th scope="row"><label for="wc_avito_xml_schedule_enabled">Автоматическая генерация XML</label></th>
                     <td>
-                        <input type="checkbox" name="wc_avito_xml_schedule_enabled" value="1" <?php checked(get_option('wc_avito_xml_schedule_enabled', '1'), '1'); ?> />
-                        <p class="description">Включить автоматическую генерацию XML по расписанию</p>
+                        <input type="checkbox" id="wc_avito_xml_schedule_enabled" name="wc_avito_xml_schedule_enabled" value="1" aria-describedby="wc_avito_xml_schedule_enabled_desc" <?php checked(get_option('wc_avito_xml_schedule_enabled', '1'), '1'); ?> />
+                        <p id="wc_avito_xml_schedule_enabled_desc" class="description">Включить автоматическую генерацию XML по расписанию</p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row">Интервал генерации XML</th>
+                    <th scope="row"><label for="wc_avito_xml_schedule_interval">Интервал генерации XML</label></th>
                     <td>
-                        <select name="wc_avito_xml_schedule_interval">
+                        <select id="wc_avito_xml_schedule_interval" name="wc_avito_xml_schedule_interval" aria-describedby="wc_avito_xml_schedule_interval_desc">
                             <option value="fifteen_minutes" <?php selected(get_option('wc_avito_xml_schedule_interval', 'thirty_minutes'), 'fifteen_minutes'); ?>>Каждые 15 минут</option>
                             <option value="thirty_minutes" <?php selected(get_option('wc_avito_xml_schedule_interval', 'thirty_minutes'), 'thirty_minutes'); ?>>Каждые 30 минут</option>
                             <option value="hourly" <?php selected(get_option('wc_avito_xml_schedule_interval', 'thirty_minutes'), 'hourly'); ?>>Каждый час</option>
@@ -108,7 +110,7 @@ function wc_avito_xml_page() {
                             <option value="twelve_hours" <?php selected(get_option('wc_avito_xml_schedule_interval', 'thirty_minutes'), 'twelve_hours'); ?>>Каждые 12 часов</option>
                             <option value="daily" <?php selected(get_option('wc_avito_xml_schedule_interval', 'thirty_minutes'), 'daily'); ?>>Ежедневно</option>
                         </select>
-                        <p class="description">Как часто генерировать XML файл</p>
+                        <p id="wc_avito_xml_schedule_interval_desc" class="description">Как часто генерировать XML файл</p>
                     </td>
                 </tr>
             </table>
@@ -116,17 +118,17 @@ function wc_avito_xml_page() {
             <h2>Настройки логирования и уведомлений</h2>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row">Включить логирование</th>
+                    <th scope="row"><label for="wc_avito_xml_enable_logging">Включить логирование</label></th>
                     <td>
-                        <input type="checkbox" name="wc_avito_xml_enable_logging" value="1" <?php checked(get_option('wc_avito_xml_enable_logging', '1'), '1'); ?> />
-                        <p class="description">Записывать логи выполнения cron-задач</p>
+                        <input type="checkbox" id="wc_avito_xml_enable_logging" name="wc_avito_xml_enable_logging" value="1" aria-describedby="wc_avito_xml_enable_logging_desc" <?php checked(get_option('wc_avito_xml_enable_logging', '1'), '1'); ?> />
+                        <p id="wc_avito_xml_enable_logging_desc" class="description">Записывать логи выполнения cron-задач</p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row">Уведомления об ошибках</th>
+                    <th scope="row"><label for="wc_avito_xml_notify_errors">Уведомления об ошибках</label></th>
                     <td>
-                        <input type="checkbox" name="wc_avito_xml_notify_errors" value="1" <?php checked(get_option('wc_avito_xml_notify_errors', '0'), '1'); ?> />
-                        <p class="description">Отправлять email-уведомления администратору при ошибках</p>
+                        <input type="checkbox" id="wc_avito_xml_notify_errors" name="wc_avito_xml_notify_errors" value="1" aria-describedby="wc_avito_xml_notify_errors_desc" <?php checked(get_option('wc_avito_xml_notify_errors', '0'), '1'); ?> />
+                        <p id="wc_avito_xml_notify_errors_desc" class="description">Отправлять email-уведомления администратору при ошибках</p>
                     </td>
                 </tr>
             </table>
@@ -200,7 +202,7 @@ function wc_avito_xml_page() {
                 // Показываем последние 20 записей
                 $recent_logs = array_slice(array_reverse($logs), 0, 20);
                 
-                echo '<div style="background: #f1f1f1; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;">';
+                echo '<div role="log" aria-label="Логи выполнения" tabindex="0" style="background: #f1f1f1; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;">';
                 foreach ($recent_logs as $log) {
                     $level_color = '';
                     switch ($log['level']) {
