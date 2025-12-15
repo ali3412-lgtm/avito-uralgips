@@ -112,24 +112,24 @@ function wc_avito_fields_page() {
                     ?>
                         <tr>
                             <td>
-                                <input type="checkbox" name="global_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> />
+                                <input type="checkbox" name="global_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> aria-label="Включить поле" />
                             </td>
                             <td>
-                                <input type="text" name="global_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="ContactPhone" />
+                                <input type="text" name="global_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="ContactPhone" aria-label="Название XML тега" />
                                 <input type="hidden" name="global_fields[<?php echo $index; ?>][label]" value="<?php echo esc_attr($field['label']); ?>" />
                                 <input type="hidden" name="global_fields[<?php echo $index; ?>][key]" value="<?php echo esc_attr($field['key']); ?>" />
                             </td>
                             <td>
                                 <?php if ($field['type'] === 'textarea'): ?>
-                                    <textarea name="global_fields[<?php echo $index; ?>][value]" rows="3" class="large-text" placeholder="Значение поля..." title="Значение, которое будет использоваться для всех объявлений"><?php echo esc_textarea($field_value); ?></textarea>
+                                    <textarea name="global_fields[<?php echo $index; ?>][value]" rows="3" class="large-text" placeholder="Значение поля..." title="Значение, которое будет использоваться для всех объявлений" aria-label="Значение поля"><?php echo esc_textarea($field_value); ?></textarea>
                                 <?php elseif ($field['type'] === 'checkbox'): ?>
-                                    <input type="checkbox" name="global_fields[<?php echo $index; ?>][value]" value="1" <?php checked($field_value, '1'); ?> title="Значение поля" />
+                                    <input type="checkbox" name="global_fields[<?php echo $index; ?>][value]" value="1" <?php checked($field_value, '1'); ?> title="Значение поля" aria-label="Значение поля" />
                                 <?php else: ?>
-                                    <input type="<?php echo esc_attr($field['type']); ?>" name="global_fields[<?php echo $index; ?>][value]" value="<?php echo esc_attr($field_value); ?>" class="regular-text" placeholder="Значение поля..." title="Значение, которое будет использоваться для всех объявлений" />
+                                    <input type="<?php echo esc_attr($field['type']); ?>" name="global_fields[<?php echo $index; ?>][value]" value="<?php echo esc_attr($field_value); ?>" class="regular-text" placeholder="Значение поля..." title="Значение, которое будет использоваться для всех объявлений" aria-label="Значение поля" />
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <select name="global_fields[<?php echo $index; ?>][type]">
+                                <select name="global_fields[<?php echo $index; ?>][type]" aria-label="Тип поля">
                                     <option value="text" <?php selected($field['type'], 'text'); ?>>Text</option>
                                     <option value="textarea" <?php selected($field['type'], 'textarea'); ?>>Textarea</option>
                                     <option value="number" <?php selected($field['type'], 'number'); ?>>Number</option>
@@ -138,7 +138,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>" aria-label="Удалить поле" title="Удалить поле"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>
                             </td>
                         </tr>
                     <?php 
@@ -176,24 +176,24 @@ function wc_avito_fields_page() {
                     ?>
                         <tr>
                             <td>
-                                <input type="checkbox" name="category_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> />
+                                <input type="checkbox" name="category_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> aria-label="Включить поле" />
                             </td>
                             <td>
-                                <input type="text" name="category_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="Category" />
+                                <input type="text" name="category_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="Category" aria-label="Название XML тега" />
                                 <input type="hidden" name="category_fields[<?php echo $index; ?>][label]" value="<?php echo esc_attr($field['label']); ?>" />
                                 <input type="hidden" name="category_fields[<?php echo $index; ?>][key]" value="<?php echo esc_attr($field['key']); ?>" />
                             </td>
                             <td>
                                 <?php if ($field['type'] === 'textarea'): ?>
-                                    <textarea name="category_fields[<?php echo $index; ?>][default_value]" rows="3" class="large-text" placeholder="Значение по умолчанию..." title="Используется, если поле не заполнено у категории"><?php echo esc_textarea($default_value); ?></textarea>
+                                    <textarea name="category_fields[<?php echo $index; ?>][default_value]" rows="3" class="large-text" placeholder="Значение по умолчанию..." title="Используется, если поле не заполнено у категории" aria-label="Значение по умолчанию"><?php echo esc_textarea($default_value); ?></textarea>
                                 <?php elseif ($field['type'] === 'checkbox'): ?>
-                                    <input type="checkbox" name="category_fields[<?php echo $index; ?>][default_value]" value="1" <?php checked($default_value, '1'); ?> title="Значение по умолчанию" />
+                                    <input type="checkbox" name="category_fields[<?php echo $index; ?>][default_value]" value="1" <?php checked($default_value, '1'); ?> title="Значение по умолчанию" aria-label="Значение по умолчанию" />
                                 <?php else: ?>
-                                    <input type="<?php echo esc_attr($field['type']); ?>" name="category_fields[<?php echo $index; ?>][default_value]" value="<?php echo esc_attr($default_value); ?>" class="regular-text" placeholder="Значение по умолчанию..." title="Используется, если поле не заполнено у категории" />
+                                    <input type="<?php echo esc_attr($field['type']); ?>" name="category_fields[<?php echo $index; ?>][default_value]" value="<?php echo esc_attr($default_value); ?>" class="regular-text" placeholder="Значение по умолчанию..." title="Используется, если поле не заполнено у категории" aria-label="Значение по умолчанию" />
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <select name="category_fields[<?php echo $index; ?>][type]">
+                                <select name="category_fields[<?php echo $index; ?>][type]" aria-label="Тип поля">
                                     <option value="text" <?php selected($field['type'], 'text'); ?>>Text</option>
                                     <option value="textarea" <?php selected($field['type'], 'textarea'); ?>>Textarea</option>
                                     <option value="number" <?php selected($field['type'], 'number'); ?>>Number</option>
@@ -202,7 +202,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="category" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" data-section="category" data-index="<?php echo $index; ?>" aria-label="Удалить поле" title="Удалить поле"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>
                             </td>
                         </tr>
                     <?php 
@@ -334,40 +334,40 @@ function wc_avito_fields_page() {
             if (section === 'global') {
                 // Для глобальных полей с колонкой value
                 row = '<tr>' +
-                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
+                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked aria-label="Включить поле" /></td>' +
                     '<td>' +
-                        '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" />' +
+                        '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" aria-label="Название XML тега" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][label]" value="" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][key]" value="" />' +
                     '</td>' +
-                    '<td><input type="text" name="' + section + '_fields[' + index + '][value]" value="" class="regular-text" placeholder="Значение поля..." /></td>' +
-                    '<td><select name="' + section + '_fields[' + index + '][type]">' +
+                    '<td><input type="text" name="' + section + '_fields[' + index + '][value]" value="" class="regular-text" placeholder="Значение поля..." aria-label="Значение поля" /></td>' +
+                    '<td><select name="' + section + '_fields[' + index + '][type]" aria-label="Тип поля">' +
                         '<option value="text">Text</option>' +
                         '<option value="textarea">Textarea</option>' +
                         '<option value="number">Number</option>' +
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '" aria-label="Удалить поле" title="Удалить поле"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button></td>' +
                     '</tr>';
             } else {
                 // Для категорий и товаров с колонкой default_value
                 row = '<tr>' +
-                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
+                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked aria-label="Включить поле" /></td>' +
                     '<td>' +
-                        '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" />' +
+                        '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" aria-label="Название XML тега" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][label]" value="" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][key]" value="" />' +
                     '</td>' +
-                    '<td><input type="text" name="' + section + '_fields[' + index + '][default_value]" value="" class="regular-text" placeholder="Общее значение" /></td>' +
-                    '<td><select name="' + section + '_fields[' + index + '][type]">' +
+                    '<td><input type="text" name="' + section + '_fields[' + index + '][default_value]" value="" class="regular-text" placeholder="Общее значение" aria-label="Значение по умолчанию" /></td>' +
+                    '<td><select name="' + section + '_fields[' + index + '][type]" aria-label="Тип поля">' +
                         '<option value="text">Text</option>' +
                         '<option value="textarea">Textarea</option>' +
                         '<option value="number">Number</option>' +
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '" aria-label="Удалить поле" title="Удалить поле"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button></td>' +
                     '</tr>';
             }
             
@@ -422,20 +422,28 @@ function wc_avito_fields_page() {
     }
     
     .delete-field {
-        font-size: 24px;
-        line-height: 1;
         color: #a00;
         padding: 0 8px;
         border: none;
         background: transparent;
         cursor: pointer;
-        font-weight: bold;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
     }
     
     .delete-field:hover {
         color: #dc3232;
-        transform: scale(1.2);
+        background-color: rgba(220, 50, 50, 0.1);
+        border-radius: 50%;
+    }
+
+    .delete-field .dashicons {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
     }
     
     .delete-field:focus {

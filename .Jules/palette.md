@@ -1,0 +1,3 @@
+## 2024-05-23 - Dynamic Table Accessibility
+**Learning:** WordPress admin tables with dynamic rows often lack accessibility features. Inputs inside table cells frequently miss labels, relying only on column headers which screen readers may not associate correctly in complex grids.
+**Action:** When working with dynamic tables, always ensure inputs have `aria-label` or `title` attributes that describe their function (e.g., "Field Name", "Field Value"). For dynamic rows added via JS, ensure the HTML string template exactly matches the PHP-rendered structure to maintain consistency. Using `dashicons` for actions (like delete) provides a better native feel than text characters like "×".
