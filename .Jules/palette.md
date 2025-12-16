@@ -1,0 +1,3 @@
+## 2025-02-28 - Icon-Only Buttons and Context
+**Learning:** In administrative interfaces with dynamic tables, icon-only buttons (like "×" for delete) are common but often lack accessible names, making them confusing for screen reader users ("button times"). Additionally, inputs in data tables often rely on column headers for context, which can be insufficient for non-visual navigation.
+**Action:** Always add `aria-label` to icon-only buttons (e.g., `aria-label="Remove field"`) and consider adding `aria-label` to table inputs that matches their column header to ensure context is preserved during navigation.
