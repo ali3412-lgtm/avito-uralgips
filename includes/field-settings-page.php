@@ -112,7 +112,7 @@ function wc_avito_fields_page() {
                     ?>
                         <tr>
                             <td>
-                                <input type="checkbox" name="global_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> />
+                                <input type="checkbox" name="global_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> aria-label="Включить поле <?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : ''); ?>" title="Включить/выключить поле" />
                             </td>
                             <td>
                                 <input type="text" name="global_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="ContactPhone" />
@@ -138,7 +138,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>" aria-label="Удалить поле <?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : ''); ?>" title="Удалить поле">×</button>
                             </td>
                         </tr>
                     <?php 
@@ -176,7 +176,7 @@ function wc_avito_fields_page() {
                     ?>
                         <tr>
                             <td>
-                                <input type="checkbox" name="category_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> />
+                                <input type="checkbox" name="category_fields[<?php echo $index; ?>][enabled]" value="1" <?php checked(!empty($field['enabled']), true); ?> aria-label="Включить поле <?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : ''); ?>" title="Включить/выключить поле" />
                             </td>
                             <td>
                                 <input type="text" name="category_fields[<?php echo $index; ?>][xml_tag]" value="<?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : $field['label']); ?>" class="regular-text" placeholder="Category" />
@@ -202,7 +202,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="category" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" data-section="category" data-index="<?php echo $index; ?>" aria-label="Удалить поле <?php echo esc_attr(isset($field['xml_tag']) ? $field['xml_tag'] : ''); ?>" title="Удалить поле">×</button>
                             </td>
                         </tr>
                     <?php 
@@ -334,7 +334,7 @@ function wc_avito_fields_page() {
             if (section === 'global') {
                 // Для глобальных полей с колонкой value
                 row = '<tr>' +
-                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
+                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked aria-label="Включить новое поле" title="Включить/выключить поле" /></td>' +
                     '<td>' +
                         '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][label]" value="" />' +
@@ -348,12 +348,12 @@ function wc_avito_fields_page() {
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '" aria-label="Удалить поле" title="Удалить поле">×</button></td>' +
                     '</tr>';
             } else {
                 // Для категорий и товаров с колонкой default_value
                 row = '<tr>' +
-                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
+                    '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked aria-label="Включить новое поле" title="Включить/выключить поле" /></td>' +
                     '<td>' +
                         '<input type="text" name="' + section + '_fields[' + index + '][xml_tag]" value="" class="regular-text" placeholder="XMLTag" />' +
                         '<input type="hidden" name="' + section + '_fields[' + index + '][label]" value="" />' +
@@ -367,7 +367,7 @@ function wc_avito_fields_page() {
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '" aria-label="Удалить поле" title="Удалить поле">×</button></td>' +
                     '</tr>';
             }
             
