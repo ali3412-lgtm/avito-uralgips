@@ -1,0 +1,3 @@
+## 2024-05-23 - Accessibility of Dynamic Admin Interfaces
+**Learning:** This plugin uses inline PHP and JS string concatenation to render admin tables. A critical pattern found is icon-only buttons (like "x" for delete) lacking `aria-label` attributes, making them inaccessible to screen readers. Additionally, focus styles were explicitly removed (`outline: none`) without replacement.
+**Action:** When working with legacy PHP/JS rendering, always inject `aria-label` attributes into both the initial PHP loop and the Javascript append logic. Ensure `outline: none` is never used unless a custom `:focus` style (like `box-shadow` or `border`) is immediately defined.
