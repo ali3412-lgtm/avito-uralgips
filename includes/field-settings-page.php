@@ -138,7 +138,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" aria-label="Удалить поле" data-section="global" data-index="<?php echo $index; ?>">×</button>
                             </td>
                         </tr>
                     <?php 
@@ -202,7 +202,7 @@ function wc_avito_fields_page() {
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="button delete-field" data-section="category" data-index="<?php echo $index; ?>">×</button>
+                                <button type="button" class="button delete-field" aria-label="Удалить поле" data-section="category" data-index="<?php echo $index; ?>">×</button>
                             </td>
                         </tr>
                     <?php 
@@ -287,7 +287,7 @@ function wc_avito_fields_page() {
                                 <?php if ($is_required): ?>
                                     <span style="color: #999; font-size: 12px;">Обязательное</span>
                                 <?php else: ?>
-                                    <button type="button" class="button delete-field" data-section="product" data-index="<?php echo $index; ?>">×</button>
+                                    <button type="button" class="button delete-field" aria-label="Удалить поле" data-section="product" data-index="<?php echo $index; ?>">×</button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -348,7 +348,7 @@ function wc_avito_fields_page() {
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" aria-label="Удалить поле" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
                     '</tr>';
             } else {
                 // Для категорий и товаров с колонкой default_value
@@ -367,7 +367,7 @@ function wc_avito_fields_page() {
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
                     '</select></td>' +
-                    '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
+                    '<td><button type="button" class="button delete-field" aria-label="Удалить поле" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
                     '</tr>';
             }
             
@@ -439,7 +439,9 @@ function wc_avito_fields_page() {
     }
     
     .delete-field:focus {
-        outline: none;
+        /* Restore focus for accessibility, using standard WP colors if needed */
+        outline: 2px solid #2271b1;
+        outline-offset: 2px;
         box-shadow: none;
     }
     
