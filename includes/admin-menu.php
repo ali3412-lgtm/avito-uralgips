@@ -37,6 +37,9 @@ function wc_avito_xml_page() {
         
         // Настройка индивидуального контроля экспорта товаров
         update_option('wc_avito_individual_product_export', isset($_POST['wc_avito_individual_product_export']) ? '1' : '0');
+        
+        // Настройка пропуска товаров без изображений
+        update_option('wc_avito_skip_products_without_images', isset($_POST['wc_avito_skip_products_without_images']) ? '1' : '0');
 
         // Настройки расписания
         update_option('wc_avito_xml_schedule_enabled', isset($_POST['wc_avito_xml_schedule_enabled']) ? '1' : '0');
@@ -78,6 +81,15 @@ function wc_avito_xml_page() {
                             <strong>Режим работы:</strong><br>
                             • <strong>Выключен</strong> (по умолчанию): Экспортируются все опубликованные товары<br>
                             • <strong>Включен</strong>: Экспортируются только товары с установленным флагом "Экспорт на Avito"
+                        </p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Не формировать объявления без изображений</th>
+                    <td>
+                        <input type="checkbox" name="wc_avito_skip_products_without_images" value="1" <?php checked(get_option('wc_avito_skip_products_without_images', '0'), '1'); ?> />
+                        <p class="description">
+                            Если включено, товары без изображений не будут добавлены в XML-файл для Avito.
                         </p>
                     </td>
                 </tr>

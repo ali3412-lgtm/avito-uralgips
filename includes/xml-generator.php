@@ -104,6 +104,21 @@ function generate_avito_xml() {
                     }
                 }
                 
+                // Проверяем наличие изображений (если настройка включена)
+                if ($should_export) {
+                    $skip_without_images = get_option('wc_avito_skip_products_without_images', '0');
+                    
+                    if ($skip_without_images === '1') {
+                        // Проверяем основное изображение и галерею
+                        $main_image_id = $product->get_image_id();
+                        $gallery_image_ids = $product->get_gallery_image_ids();
+                        
+                        if (empty($main_image_id) && empty($gallery_image_ids)) {
+                            $should_export = false;
+                        }
+                    }
+                }
+                
                 // Экспортируем товар
                 if ($should_export) {
                     add_product_ad($xml, $product, true);
