@@ -32,12 +32,9 @@ function wc_avito_add_dynamic_product_fields() {
     // Получаем настройки динамических полей
     $settings = wc_avito_get_field_settings();
     
-    if (empty($settings['product_fields'])) {
-        echo '</div>';
-        return;
-    }
-    
-    foreach ($settings['product_fields'] as $field) {
+    // Отображаем динамические поля, если они настроены
+    if (!empty($settings['product_fields'])) {
+        foreach ($settings['product_fields'] as $field) {
         if (empty($field['enabled'])) {
             continue;
         }
@@ -107,7 +104,8 @@ function wc_avito_add_dynamic_product_fields() {
                 ));
                 break;
         }
-    }
+        }
+    } // end if (!empty($settings['product_fields']))
     
     // Получаем пользовательские поля товара
     $custom_fields = get_post_meta($post->ID, 'avito_product_custom_fields', true);
