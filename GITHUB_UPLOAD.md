@@ -1,38 +1,12 @@
 # Инструкция по загрузке на GitHub
 
-## Быстрая настройка
+## Репозиторий
 
-### 1. Настройте Git (один раз)
-```bash
-git config --global user.name "Данил Трубицын"
-git config --global user.email "your-email@example.com"
-```
+**URL**: https://github.com/ali3412-lgtm/avito-uralgips
 
-### 2. Создайте репозиторий на GitHub
-- Перейдите на https://github.com/new
-- Название: `wc-avito`
-- Описание: "WooCommerce Avito XML Generator Plugin"
-- Private или Public (на выбор)
-- НЕ добавляйте README, .gitignore, license (они уже есть)
-- Создайте репозиторий
+## Быстрые команды
 
-### 3. Подключите и загрузите код
-```bash
-# Добавьте удаленный репозиторий (замените YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/wc-avito.git
-
-# Загрузите код
-git push -u origin main
-```
-
-## Готово!
-
-Ваш плагин теперь на GitHub. Ссылка будет:
-`https://github.com/YOUR_USERNAME/wc-avito`
-
-## Дальнейшая работа
-
-### Добавить изменения
+### Загрузить изменения
 ```bash
 git add .
 git commit -m "Описание изменений"
@@ -46,27 +20,26 @@ git status
 
 ### Посмотреть историю
 ```bash
-git log --oneline
+git log --oneline -10
 ```
 
-## Что уже сделано
+## Первоначальная настройка (уже выполнена)
 
-✅ Git репозиторий инициализирован
-✅ Создан .gitignore (исключает .DS_Store, логи, временные файлы)
-✅ Создан README.md с полной документацией
-✅ Все файлы добавлены и закоммичены
-✅ 15 файлов готовы к загрузке (3129+ строк кода)
+✅ Git репозиторий инициализирован  
+✅ Remote настроен: `origin -> https://github.com/ali3412-lgtm/avito-uralgips.git`  
+✅ Создан .gitignore  
+✅ Создан README.md с документацией  
 
 ## Структура проекта
 
 ```
-wc-avito/
-├── .gitignore                  # Исключения для Git
-├── README.md                   # Документация
-├── GITHUB_UPLOAD.md           # Эта инструкция
+avito-uralgips/
+├── .gitignore
+├── README.md
+├── GITHUB_UPLOAD.md
 ├── avito-uralgips.php         # Главный файл плагина
-├── uninstall.php              # Деинсталляция
-└── includes/                  # Функционал плагина
+├── uninstall.php
+└── includes/
     ├── admin-menu.php
     ├── category-export-field.php
     ├── cron.php
