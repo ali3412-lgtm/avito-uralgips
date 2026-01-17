@@ -49,7 +49,7 @@ require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/category-export-field.php';
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/dynamic-category-fields.php';
 // Поле экспорта для товаров (чекбокс для индивидуального контроля)
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/product-export-field.php';
-// require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/dynamic-product-fields.php'; // ОТКЛЮЧЕНО - только поле экспорта
+require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/dynamic-product-fields.php'; // Включено - индивидуальные поля товара
 // require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/product-fields.php'; // ОТКЛЮЧЕНО - заменено на динамические поля
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/xml-generator.php';
 require_once WC_AVITO_VDOM_PLUGIN_DIR . 'includes/cron.php';
