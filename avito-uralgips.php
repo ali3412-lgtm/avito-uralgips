@@ -3,7 +3,7 @@
  * Plugin Name: WC Avito XML Export
  * Plugin URI: 
  * Description: Экспорт товаров WooCommerce на Avito в формате XML
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: 
  * Author URI: 
  * Text Domain: wc-avito-vdom
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Определяем константы плагина
-define('WC_AVITO_VDOM_VERSION', '1.0.0');
+define('WC_AVITO_VDOM_VERSION', '1.0.1');
 define('WC_AVITO_VDOM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_AVITO_VDOM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WC_AVITO_VDOM_PLUGIN_BASENAME', plugin_basename(__FILE__));
