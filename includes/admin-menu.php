@@ -243,33 +243,91 @@ function wc_avito_xml_page() {
 
             <h2>Исключение атрибутов</h2>
             <p class="description">Выберите атрибуты товаров, которые НЕ будут включаться в <code>{product_attributes_list}</code>.</p>
-            <table class="form-table">
-                <tr valign="top">
-                    <th scope="row">Исключить атрибуты</th>
-                    <td>
-                        <?php
-                        $all_attributes = wc_get_attribute_taxonomies();
-                        $excluded_attributes = get_option('wc_avito_excluded_attributes', array());
-                        
-                        if (!empty($all_attributes)) {
-                            echo '<div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">';
-                            foreach ($all_attributes as $attribute) {
-                                $attr_name = 'pa_' . $attribute->attribute_name;
-                                $checked = in_array($attr_name, $excluded_attributes) ? 'checked' : '';
-                                echo '<label style="display: block; margin-bottom: 5px;">';
-                                echo '<input type="checkbox" name="wc_avito_excluded_attributes[]" value="' . esc_attr($attr_name) . '" ' . $checked . ' /> ';
-                                echo esc_html($attribute->attribute_label);
-                                echo '</label>';
-                            }
-                            echo '</div>';
+            
+            <?php
+            $all_attributes = wc_get_attribute_taxonomies();
+            $excluded_attributes = get_option('wc_avito_excluded_attributes', array());
+            $total_count = count($all_attributes);
+            $excluded_count = count($excluded_attributes);
+            
+            if (!empty($all_attributes)) :
+            ?>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="wc-avito-attr-search" placeholder="🔍 Поиск атрибутов..." style="width: 300px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;" />
+                <span style="margin-left: 15px; color: #666;">
+                    Исключено: <strong id="wc-avito-excluded-count"><?php echo esc_html($excluded_count); ?></strong> из <?php echo esc_html($total_count); ?>
+                </span>
+            </div>
+            
+            <div style="margin-bottom: 10px;">
+                <button type="button" class="button" id="wc-avito-attr-select-all">Выбрать все</button>
+                <button type="button" class="button" id="wc-avito-attr-deselect-all">Снять все</button>
+            </div>
+            
+            <div id="wc-avito-attributes-container" style="max-height: 350px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 4px; background: #fafafa;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+                    <?php foreach ($all_attributes as $attribute) :
+                        $attr_name = 'pa_' . $attribute->attribute_name;
+                        $checked = in_array($attr_name, $excluded_attributes) ? 'checked' : '';
+                    ?>
+                    <label class="wc-avito-attr-label" style="display: flex; align-items: center; padding: 6px 10px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; cursor: pointer; transition: background 0.2s;" data-name="<?php echo esc_attr(mb_strtolower($attribute->attribute_label)); ?>">
+                        <input type="checkbox" name="wc_avito_excluded_attributes[]" value="<?php echo esc_attr($attr_name); ?>" <?php echo $checked; ?> style="margin-right: 8px;" />
+                        <span style="font-size: 13px;"><?php echo esc_html($attribute->attribute_label); ?></span>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            
+            <p class="description" style="margin-top: 10px;">Отмеченные атрибуты не будут отображаться при использовании плейсхолдера <code>{product_attributes_list}</code>.</p>
+            
+            <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Поиск атрибутов
+                $('#wc-avito-attr-search').on('input', function() {
+                    var searchText = $(this).val().toLowerCase();
+                    $('.wc-avito-attr-label').each(function() {
+                        var attrName = $(this).data('name');
+                        if (attrName.indexOf(searchText) !== -1) {
+                            $(this).show();
                         } else {
-                            echo '<p>Атрибуты товаров не найдены.</p>';
+                            $(this).hide();
                         }
-                        ?>
-                        <p class="description" style="margin-top: 10px;">Отмеченные атрибуты не будут отображаться при использовании плейсхолдера <code>{product_attributes_list}</code>.</p>
-                    </td>
-                </tr>
-            </table>
+                    });
+                });
+                
+                // Обновление счётчика
+                function updateExcludedCount() {
+                    var count = $('#wc-avito-attributes-container input[type="checkbox"]:checked').length;
+                    $('#wc-avito-excluded-count').text(count);
+                }
+                
+                // Выбрать все (только видимые)
+                $('#wc-avito-attr-select-all').on('click', function() {
+                    $('.wc-avito-attr-label:visible input[type="checkbox"]').prop('checked', true);
+                    updateExcludedCount();
+                });
+                
+                // Снять все (только видимые)
+                $('#wc-avito-attr-deselect-all').on('click', function() {
+                    $('.wc-avito-attr-label:visible input[type="checkbox"]').prop('checked', false);
+                    updateExcludedCount();
+                });
+                
+                // Обновляем счётчик при изменении чекбоксов
+                $('#wc-avito-attributes-container').on('change', 'input[type="checkbox"]', function() {
+                    updateExcludedCount();
+                });
+                
+                // Hover эффект для лейблов
+                $('.wc-avito-attr-label').hover(
+                    function() { $(this).css('background', '#f0f7ff'); },
+                    function() { $(this).css('background', '#fff'); }
+                );
+            });
+            </script>
+            <?php else : ?>
+            <p>Атрибуты товаров не найдены.</p>
+            <?php endif; ?>
 
             <?php submit_button('Сохранить настройки', 'primary', 'save_settings'); ?>
         </form>
