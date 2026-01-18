@@ -11,6 +11,35 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Применяет пользовательские правила замены символов к тексту
+ *
+ * @param string $text Исходный текст
+ * @return string Текст с применёнными заменами
+ */
+function wc_avito_apply_character_replacements($text) {
+    if (empty($text) || !is_string($text)) {
+        return $text;
+    }
+    
+    $replacements = get_option('wc_avito_character_replacements', array());
+    
+    if (empty($replacements) || !is_array($replacements)) {
+        return $text;
+    }
+    
+    foreach ($replacements as $rule) {
+        $search = isset($rule['search']) ? $rule['search'] : '';
+        $replace = isset($rule['replace']) ? $rule['replace'] : '';
+        
+        if (!empty($search)) {
+            $text = str_replace($search, $replace, $text);
+        }
+    }
+    
+    return $text;
+}
+
+/**
  * Динамическое добавление полей в объявление
  */
 function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
@@ -25,6 +54,8 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
     // Если у категории есть шаблон Title, добавляем его в первую очередь
     if (!empty($category_title_template)) {
         $value = wc_avito_process_placeholders($category_title_template, $product, $category_id);
+        // Применяем замену символов к Title
+        $value = wc_avito_apply_character_replacements($value);
         if (!empty($value)) {
             // Если значение содержит HTML теги, используем CDATA
             if (preg_match('/<[^>]+>/', $value)) {
@@ -55,6 +86,11 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
             
             // Обрабатываем плейсхолдеры
             $value = wc_avito_process_placeholders($value, $product, $category_id);
+            
+            // Применяем замену символов к Title и Description
+            if ($xml_tag === 'Title' || $xml_tag === 'Description') {
+                $value = wc_avito_apply_character_replacements($value);
+            }
             
             if (!empty($value)) {
                 // Если значение содержит HTML теги, используем CDATA
@@ -87,6 +123,11 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
             if (!empty($value)) {
                 // Используем xml_tag, если он задан, иначе label
                 $xml_tag = !empty($field['xml_tag']) ? $field['xml_tag'] : (!empty($field['label']) ? $field['label'] : $field['key']);
+                
+                // Применяем замену символов к Description
+                if ($xml_tag === 'Description' || $field['key'] === 'avito_description') {
+                    $value = wc_avito_apply_character_replacements($value);
+                }
                 
                 // Специальная обработка для Description - используем CDATA и prepare_description
                 if ($xml_tag === 'Description' || $field['key'] === 'avito_description') {
@@ -121,6 +162,11 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
                 
                 // Обрабатываем плейсхолдеры
                 $value = wc_avito_process_placeholders($value, $product, $category_id);
+                
+                // Применяем замену символов к Description
+                if ($xml_tag === 'Description') {
+                    $value = wc_avito_apply_character_replacements($value);
+                }
                 
                 if (!empty($value)) {
                     // Специальная обработка для Description - используем CDATA и prepare_description
@@ -157,6 +203,11 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
                 
                 // Обрабатываем плейсхолдеры
                 $value = wc_avito_process_placeholders($value, $product, $category_id);
+                
+                // Применяем замену символов к Description
+                if ($xml_tag === 'Description') {
+                    $value = wc_avito_apply_character_replacements($value);
+                }
                 
                 if (!empty($value)) {
                     // Специальная обработка для Description - используем CDATA и prepare_description

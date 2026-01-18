@@ -51,6 +51,27 @@ function wc_avito_xml_page() {
         // Настройки логирования и уведомлений
         update_option('wc_avito_xml_enable_logging', isset($_POST['wc_avito_xml_enable_logging']) ? '1' : '0');
         update_option('wc_avito_xml_notify_errors', isset($_POST['wc_avito_xml_notify_errors']) ? '1' : '0');
+        
+        // Настройки замены символов
+        $character_replacements = array();
+        if (isset($_POST['wc_avito_char_search']) && isset($_POST['wc_avito_char_replace'])) {
+            $searches = $_POST['wc_avito_char_search'];
+            $replaces = $_POST['wc_avito_char_replace'];
+            
+            for ($i = 0; $i < count($searches); $i++) {
+                $search = isset($searches[$i]) ? $searches[$i] : '';
+                $replace = isset($replaces[$i]) ? $replaces[$i] : '';
+                
+                // Сохраняем только непустые правила поиска
+                if (!empty($search)) {
+                    $character_replacements[] = array(
+                        'search' => $search,
+                        'replace' => $replace
+                    );
+                }
+            }
+        }
+        update_option('wc_avito_character_replacements', $character_replacements);
 
         echo '<div class="updated"><p>Настройки сохранены.</p></div>';
     }
@@ -154,6 +175,67 @@ function wc_avito_xml_page() {
                     </td>
                 </tr>
             </table>
+
+            <h2>Замена символов</h2>
+            <p class="description">Укажите символы или текст, которые нужно заменить при генерации названий и описаний объявлений.</p>
+            <table class="form-table" id="wc-avito-char-replacements-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Искомый текст</th>
+                        <th style="width: 40%;">Заменить на</th>
+                        <th style="width: 20%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="wc-avito-char-replacements-body">
+                    <?php
+                    $replacements = get_option('wc_avito_character_replacements', array());
+                    if (empty($replacements)) {
+                        $replacements = array(array('search' => '', 'replace' => ''));
+                    }
+                    foreach ($replacements as $index => $rule) :
+                    ?>
+                    <tr class="wc-avito-char-replacement-row">
+                        <td>
+                            <input type="text" name="wc_avito_char_search[]" value="<?php echo esc_attr($rule['search']); ?>" class="regular-text" placeholder="Например: ®" />
+                        </td>
+                        <td>
+                            <input type="text" name="wc_avito_char_replace[]" value="<?php echo esc_attr($rule['replace']); ?>" class="regular-text" placeholder="Например: (R)" />
+                        </td>
+                        <td>
+                            <button type="button" class="button wc-avito-remove-char-row">Удалить</button>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>
+                <button type="button" class="button button-secondary" id="wc-avito-add-char-row">+ Добавить правило замены</button>
+            </p>
+            
+            <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Добавление новой строки
+                $('#wc-avito-add-char-row').on('click', function() {
+                    var newRow = '<tr class="wc-avito-char-replacement-row">' +
+                        '<td><input type="text" name="wc_avito_char_search[]" value="" class="regular-text" placeholder="Например: ®" /></td>' +
+                        '<td><input type="text" name="wc_avito_char_replace[]" value="" class="regular-text" placeholder="Например: (R)" /></td>' +
+                        '<td><button type="button" class="button wc-avito-remove-char-row">Удалить</button></td>' +
+                        '</tr>';
+                    $('#wc-avito-char-replacements-body').append(newRow);
+                });
+                
+                // Удаление строки
+                $(document).on('click', '.wc-avito-remove-char-row', function() {
+                    var rows = $('.wc-avito-char-replacement-row').length;
+                    if (rows > 1) {
+                        $(this).closest('tr').remove();
+                    } else {
+                        // Если это последняя строка, просто очищаем поля
+                        $(this).closest('tr').find('input').val('');
+                    }
+                });
+            });
+            </script>
 
             <?php submit_button('Сохранить настройки', 'primary', 'save_settings'); ?>
         </form>
