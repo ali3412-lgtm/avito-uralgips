@@ -280,6 +280,7 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
  * - {product_sale_price} - Цена со скидкой
  * - {product_description} - Описание товара
  * - {product_short_description} - Краткое описание
+ * - {product_stock} - Количество товара на остатке
  * - {category_name} - Название категории товара
  * - {product_attributes_list} - Все атрибуты товара в виде HTML списка <ul><li>Свойство: значение</li></ul>
  * - {meta:field_name} - Произвольное поле товара
@@ -302,6 +303,10 @@ function wc_avito_process_placeholders($value, $product = null, $category_id = n
         $value = str_replace('{product_sale_price}', $product->get_sale_price(), $value);
         $value = str_replace('{product_description}', $product->get_description(), $value);
         $value = str_replace('{product_short_description}', $product->get_short_description(), $value);
+        
+        // Количество товара на остатке
+        $stock_quantity = $product->get_stock_quantity();
+        $value = str_replace('{product_stock}', ($stock_quantity !== null ? $stock_quantity : ''), $value);
         
         // Категория товара
         $categories = $product->get_category_ids();
