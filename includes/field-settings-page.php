@@ -61,6 +61,7 @@ function wc_avito_fields_page() {
                         <li><code>{product_sale_price}</code> - Цена со скидкой</li>
                         <li><code>{product_description}</code> - Полное описание</li>
                         <li><code>{product_short_description}</code> - Краткое описание</li>
+                        <li><code>{product_stock}</code> - Количество на остатке</li>
                         <li><code>{category_name}</code> - Название категории</li>
                         <li><code>{product_attributes_list}</code> - Список всех атрибутов в HTML формате <code>&lt;ul&gt;&lt;li&gt;Свойство: значение&lt;/li&gt;&lt;/ul&gt;</code></li>
                     </ul>
