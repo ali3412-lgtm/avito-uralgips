@@ -281,9 +281,11 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
  * - {product_description} - Описание товара
  * - {product_short_description} - Краткое описание
  * - {product_stock} - Количество товара на остатке
+ * - {product_unit} - Единица измерения товара (из мета-поля _unit)
  * - {category_name} - Название категории товара
  * - {product_attributes_list} - Все атрибуты товара в виде HTML списка <ul><li>Свойство: значение</li></ul>
  * - {meta:field_name} - Произвольное поле товара
+ * - {meta:field_name.key} - Ключ из сериализованного массива произвольного поля товара
  * - {term_meta:field_name} - Произвольное поле категории
  * - {attribute:attribute_name} - Атрибут товара
  */
@@ -308,6 +310,16 @@ function wc_avito_process_placeholders($value, $product = null, $category_id = n
         $stock_quantity = $product->get_stock_quantity();
         $value = str_replace('{product_stock}', ($stock_quantity !== null ? $stock_quantity : ''), $value);
         
+        // Единица измерения товара - {product_unit}
+        if (strpos($value, '{product_unit}') !== false) {
+            $unit_meta = get_post_meta($product->get_id(), '_unit', true);
+            $unit_value = '';
+            if (is_array($unit_meta) && isset($unit_meta['value'])) {
+                $unit_value = $unit_meta['value'];
+            }
+            $value = str_replace('{product_unit}', $unit_value, $value);
+        }
+        
         // Категория товара
         $categories = $product->get_category_ids();
         if (!empty($categories)) {
@@ -317,11 +329,34 @@ function wc_avito_process_placeholders($value, $product = null, $category_id = n
             }
         }
         
-        // Произвольные поля (meta) - {meta:field_name}
+        // Произвольные поля (meta) - {meta:field_name} или {meta:field_name.key}
         if (preg_match_all('/{meta:([^}]+)}/', $value, $matches)) {
-            foreach ($matches[1] as $index => $field_name) {
-                $meta_value = get_post_meta($product->get_id(), $field_name, true);
-                $value = str_replace($matches[0][$index], $meta_value, $value);
+            foreach ($matches[1] as $index => $field_expression) {
+                // Проверяем, есть ли вложенный ключ (например, _unit.value)
+                if (strpos($field_expression, '.') !== false) {
+                    $parts = explode('.', $field_expression, 2);
+                    $field_name = $parts[0];
+                    $array_key = $parts[1];
+                    
+                    $meta_value = get_post_meta($product->get_id(), $field_name, true);
+                    
+                    // Если мета-значение - массив и ключ существует, извлекаем значение
+                    if (is_array($meta_value) && isset($meta_value[$array_key])) {
+                        $final_value = $meta_value[$array_key];
+                    } else {
+                        $final_value = '';
+                    }
+                } else {
+                    $meta_value = get_post_meta($product->get_id(), $field_expression, true);
+                    // Если значение массив, преобразуем в строку (для обратной совместимости)
+                    if (is_array($meta_value)) {
+                        $final_value = '';
+                    } else {
+                        $final_value = $meta_value;
+                    }
+                }
+                
+                $value = str_replace($matches[0][$index], $final_value, $value);
             }
         }
         
