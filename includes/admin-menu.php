@@ -72,6 +72,10 @@ function wc_avito_xml_page() {
             }
         }
         update_option('wc_avito_character_replacements', $character_replacements);
+        
+        // Настройки исключаемых атрибутов
+        $excluded_attributes = isset($_POST['wc_avito_excluded_attributes']) ? array_map('sanitize_text_field', $_POST['wc_avito_excluded_attributes']) : array();
+        update_option('wc_avito_excluded_attributes', $excluded_attributes);
 
         echo '<div class="updated"><p>Настройки сохранены.</p></div>';
     }
@@ -236,6 +240,36 @@ function wc_avito_xml_page() {
                 });
             });
             </script>
+
+            <h2>Исключение атрибутов</h2>
+            <p class="description">Выберите атрибуты товаров, которые НЕ будут включаться в <code>{product_attributes_list}</code>.</p>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row">Исключить атрибуты</th>
+                    <td>
+                        <?php
+                        $all_attributes = wc_get_attribute_taxonomies();
+                        $excluded_attributes = get_option('wc_avito_excluded_attributes', array());
+                        
+                        if (!empty($all_attributes)) {
+                            echo '<div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">';
+                            foreach ($all_attributes as $attribute) {
+                                $attr_name = 'pa_' . $attribute->attribute_name;
+                                $checked = in_array($attr_name, $excluded_attributes) ? 'checked' : '';
+                                echo '<label style="display: block; margin-bottom: 5px;">';
+                                echo '<input type="checkbox" name="wc_avito_excluded_attributes[]" value="' . esc_attr($attr_name) . '" ' . $checked . ' /> ';
+                                echo esc_html($attribute->attribute_label);
+                                echo '</label>';
+                            }
+                            echo '</div>';
+                        } else {
+                            echo '<p>Атрибуты товаров не найдены.</p>';
+                        }
+                        ?>
+                        <p class="description" style="margin-top: 10px;">Отмеченные атрибуты не будут отображаться при использовании плейсхолдера <code>{product_attributes_list}</code>.</p>
+                    </td>
+                </tr>
+            </table>
 
             <?php submit_button('Сохранить настройки', 'primary', 'save_settings'); ?>
         </form>

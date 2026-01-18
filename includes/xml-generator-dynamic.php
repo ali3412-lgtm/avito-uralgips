@@ -333,15 +333,24 @@ function wc_avito_process_placeholders($value, $product = null, $category_id = n
             $attributes_html = '';
             $attributes = $product->get_attributes();
             
+            // Получаем список исключённых атрибутов
+            $excluded_attributes = get_option('wc_avito_excluded_attributes', array());
+            
             if (!empty($attributes)) {
                 // Сначала собираем все элементы в массив
                 $attributes_items = array();
                 
                 foreach ($attributes as $attribute) {
                     if ($attribute->is_taxonomy()) {
+                        // Проверяем, не исключён ли этот атрибут
+                        $taxonomy_name = $attribute->get_name();
+                        if (in_array($taxonomy_name, $excluded_attributes)) {
+                            continue; // Пропускаем исключённый атрибут
+                        }
+                        
                         // Атрибут из таксономии
-                        $attribute_name = wc_attribute_label($attribute->get_name());
-                        $terms = wp_get_post_terms($product->get_id(), $attribute->get_name(), array('fields' => 'names'));
+                        $attribute_name = wc_attribute_label($taxonomy_name);
+                        $terms = wp_get_post_terms($product->get_id(), $taxonomy_name, array('fields' => 'names'));
                         if (!empty($terms) && !is_wp_error($terms)) {
                             $attribute_value = implode(', ', $terms);
                             $attributes_items[] = esc_html($attribute_name) . ': ' . esc_html($attribute_value);
