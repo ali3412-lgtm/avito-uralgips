@@ -64,6 +64,7 @@ function wc_avito_fields_page() {
                         <li><code>{product_stock}</code> - Количество на остатке</li>
                         <li><code>{category_name}</code> - Название категории</li>
                         <li><code>{product_attributes_list}</code> - Список всех атрибутов в HTML формате <code>&lt;ul&gt;&lt;li&gt;Свойство: значение&lt;/li&gt;&lt;/ul&gt;</code></li>
+                        <li><code>{current_date}</code> - Текущая дата (например, "19 января")</li>
                     </ul>
                 </div>
                 <div>

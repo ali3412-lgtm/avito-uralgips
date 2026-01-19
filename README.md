@@ -83,6 +83,7 @@ WordPress плагин для автоматической генерации XM
 - `{product_description}` - полное описание
 - `{product_short_description}` - краткое описание
 - `{category_name}` - название категории
+- `{current_date}` - текущая дата (например, "19 января")
 
 ### Произвольные поля
 - `{meta:field_name}` - произвольное поле товара

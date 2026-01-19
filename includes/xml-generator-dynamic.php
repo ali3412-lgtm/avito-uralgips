@@ -284,6 +284,7 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
  * - {product_unit} - Единица измерения товара (из мета-поля _unit)
  * - {category_name} - Название категории товара
  * - {product_attributes_list} - Все атрибуты товара в виде HTML списка <ul><li>Свойство: значение</li></ul>
+ * - {current_date} - Текущая дата в формате "19 января"
  * - {meta:field_name} - Произвольное поле товара
  * - {meta:field_name.key} - Ключ из сериализованного массива произвольного поля товара
  * - {term_meta:field_name} - Произвольное поле категории
@@ -292,6 +293,19 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
 function wc_avito_process_placeholders($value, $product = null, $category_id = null) {
     if (empty($value) || !is_string($value)) {
         return $value;
+    }
+    
+    // Обработка плейсхолдера текущей даты - {current_date}
+    if (strpos($value, '{current_date}') !== false) {
+        $months_ru = array(
+            1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+            5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+            9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
+        );
+        $day = date('j');
+        $month = (int)date('n');
+        $current_date_str = $day . ' ' . $months_ru[$month];
+        $value = str_replace('{current_date}', $current_date_str, $value);
     }
     
     // Обработка плейсхолдеров товара
