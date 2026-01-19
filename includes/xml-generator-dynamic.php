@@ -419,9 +419,9 @@ function wc_avito_process_placeholders($value, $product = null, $category_id = n
                     }
                 }
                 
-                // Формируем HTML список с точками
+                // Формируем HTML список с точками и заголовком
                 if (!empty($attributes_items)) {
-                    $attributes_html = '<ul>';
+                    $attributes_html = '<p><strong>Характеристики</strong></p><ul>';
                     $total = count($attributes_items);
                     foreach ($attributes_items as $index => $item) {
                         // Последний элемент заканчивается точкой, остальные - точкой с пробелом
