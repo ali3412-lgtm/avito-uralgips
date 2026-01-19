@@ -41,6 +41,8 @@ function wc_avito_edit_category_export_field($term) {
         </th>
         <td>
             <div style="border: 1px solid #ddd; padding: 15px; background: #f9f9f9;">
+                <!-- Маркер для проверки, что форма Авито была отправлена -->
+                <input type="hidden" name="avito_category_form_submitted" value="1" />
                 <div style="margin-bottom: 15px; padding: 10px; background: <?php echo $avito_export_disabled === '1' ? '#fff3cd' : '#d4edda'; ?>; border-radius: 4px;">
                     <label for="avito_export_disabled" style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" name="avito_export_disabled" id="avito_export_disabled" value="1" <?php checked($avito_export_disabled, '1'); ?> style="margin-right: 10px;" />
@@ -280,10 +282,17 @@ function wc_avito_save_category_export_field($term_id) {
 add_action('edited_product_cat', 'wc_avito_update_category_export_field', 10, 2);
 
 function wc_avito_update_category_export_field($term_id) {
+    // Проверяем, что форма Авито была действительно отправлена
+    // Это защищает от случайного удаления данных при конфликтах плагинов или проблемах с JS
+    if (!isset($_POST['avito_category_form_submitted']) || $_POST['avito_category_form_submitted'] !== '1') {
+        return; // Форма Авито не была отправлена, не трогаем данные
+    }
+
     // Сохраняем состояние отключения экспорта
     if (isset($_POST['avito_export_disabled'])) {
         update_term_meta($term_id, 'avito_export_disabled', '1');
     } else {
+        // Удаляем только если форма была отправлена (маркер проверен выше)
         delete_term_meta($term_id, 'avito_export_disabled');
     }
 
@@ -314,11 +323,11 @@ function wc_avito_update_category_export_field($term_id) {
         if (!empty($prepared_fields)) {
             update_term_meta($term_id, 'avito_category_custom_fields', $prepared_fields);
         } else {
-            delete_term_meta($term_id, 'avito_category_custom_fields');
+            // Сохраняем пустой массив вместо удаления, чтобы сохранить намерение пользователя
+            update_term_meta($term_id, 'avito_category_custom_fields', array());
         }
-    } else {
-        delete_term_meta($term_id, 'avito_category_custom_fields');
     }
+    // Убрали блок else с delete_term_meta - если массив не пришел, не трогаем существующие данные
 }
 
 /**

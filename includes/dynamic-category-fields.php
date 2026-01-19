@@ -80,6 +80,12 @@ function wc_avito_add_dynamic_category_fields($term, $taxonomy) {
 }
 
 function wc_avito_save_dynamic_category_fields($term_id, $tt_id) {
+    // Проверяем, что форма Авито была действительно отправлена
+    // Это защищает от случайного удаления данных при конфликтах плагинов или проблемах с JS
+    if (!isset($_POST['avito_category_form_submitted']) || $_POST['avito_category_form_submitted'] !== '1') {
+        return; // Форма Авито не была отправлена, не трогаем данные
+    }
+
     // Получаем настройки динамических полей
     $settings = wc_avito_get_field_settings();
     
@@ -98,27 +104,24 @@ function wc_avito_save_dynamic_category_fields($term_id, $tt_id) {
             if (isset($_POST[$field_id])) {
                 update_term_meta($term_id, $field_id, '1');
             } else {
-                delete_term_meta($term_id, $field_id);
+                // Для чекбоксов сохраняем '0' вместо удаления
+                update_term_meta($term_id, $field_id, '0');
             }
         } elseif ($field['type'] === 'textarea') {
             if (isset($_POST[$field_id])) {
                 $value = wp_kses_post($_POST[$field_id]);
-                if (!empty($value)) {
-                    update_term_meta($term_id, $field_id, $value);
-                } else {
-                    delete_term_meta($term_id, $field_id);
-                }
+                // Сохраняем значение (даже пустое) вместо удаления
+                update_term_meta($term_id, $field_id, $value);
             }
+            // Если поле не isset, не трогаем существующее значение
         } else {
             if (isset($_POST[$field_id])) {
                 // Разрешаем HTML теги
                 $value = wp_kses_post($_POST[$field_id]);
-                if (!empty($value)) {
-                    update_term_meta($term_id, $field_id, $value);
-                } else {
-                    delete_term_meta($term_id, $field_id);
-                }
+                // Сохраняем значение (даже пустое) вместо удаления
+                update_term_meta($term_id, $field_id, $value);
             }
+            // Если поле не isset, не трогаем существующее значение
         }
     }
 }
