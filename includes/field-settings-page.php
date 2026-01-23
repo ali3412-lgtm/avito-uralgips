@@ -85,19 +85,8 @@ function wc_avito_fields_page() {
         
         <div class="notice notice-success inline" style="margin: 15px 0; padding: 10px;">
             <p style="margin: 0;">
-                <strong>✓ Поддержка HTML:</strong> Все поля поддерживают HTML теги.
+                <strong>✓ Поддержка HTML:</strong> Все поля поддерживают HTML теги. 
                 Вы можете использовать теги форматирования: <code>&lt;br&gt;</code>, <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code> и другие безопасные HTML элементы.
-            </p>
-        </div>
-
-        <div class="notice notice-info inline" style="margin: 15px 0; padding: 10px; background-color: #e7f3ff; border-left: 4px solid #2196F3;">
-            <h4 style="margin-top: 0;">🔍 Условия для глобальных полей</h4>
-            <p style="margin-bottom: 0;">
-                Для <strong>глобальных полей</strong> вы можете указать условие через плейсхолдер. Поле будет добавлено в XML <strong>только если указанный плейсхолдер возвращает непустое значение</strong>.<br>
-                <strong>Примеры использования:</strong><br>
-                • Укажите <code>{product_stock}</code> в условии, чтобы поле добавлялось только для товаров с указанным остатком<br>
-                • Укажите <code>{meta:custom_field}</code>, чтобы поле добавлялось только если у товара заполнено произвольное поле<br>
-                • Укажите <code>{attribute:pa_color}</code>, чтобы поле добавлялось только если у товара есть атрибут цвета
             </p>
         </div>
         
@@ -111,19 +100,17 @@ function wc_avito_fields_page() {
                 <thead>
                     <tr>
                         <th width="5%">Вкл.</th>
-                        <th width="15%">Название XML тега</th>
-                        <th width="25%">Значение</th>
-                        <th width="20%">Условие (плейсхолдер)</th>
-                        <th width="15%">Тип</th>
+                        <th width="20%">Название XML тега</th>
+                        <th width="30%">Значение</th>
+                        <th width="20%">Тип</th>
                         <th width="5%">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
+                    <?php 
                     if (!empty($settings['global_fields'])) {
-                        foreach ($settings['global_fields'] as $index => $field):
+                        foreach ($settings['global_fields'] as $index => $field): 
                             $field_value = isset($field['value']) ? $field['value'] : '';
-                            $condition_placeholder = isset($field['condition_placeholder']) ? $field['condition_placeholder'] : '';
                     ?>
                         <tr>
                             <td>
@@ -144,10 +131,6 @@ function wc_avito_fields_page() {
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <input type="text" name="global_fields[<?php echo $index; ?>][condition_placeholder]" value="<?php echo esc_attr($condition_placeholder); ?>" class="regular-text" placeholder="{product_stock}" title="Поле будет добавлено только если указанный плейсхолдер возвращает непустое значение. Оставьте пустым для безусловного добавления." />
-                                <small style="display: block; color: #666; margin-top: 3px;">Например: {product_stock}</small>
-                            </td>
-                            <td>
                                 <select name="global_fields[<?php echo $index; ?>][type]">
                                     <option value="text" <?php selected($field['type'], 'text'); ?>>Text</option>
                                     <option value="textarea" <?php selected($field['type'], 'textarea'); ?>>Textarea</option>
@@ -160,7 +143,7 @@ function wc_avito_fields_page() {
                                 <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>">×</button>
                             </td>
                         </tr>
-                    <?php
+                    <?php 
                         endforeach;
                     }
                     ?>
@@ -351,7 +334,7 @@ function wc_avito_fields_page() {
             var row = '';
             
             if (section === 'global') {
-                // Для глобальных полей с колонкой value и condition_placeholder
+                // Для глобальных полей с колонкой value
                 row = '<tr>' +
                     '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
                     '<td>' +
@@ -360,10 +343,6 @@ function wc_avito_fields_page() {
                         '<input type="hidden" name="' + section + '_fields[' + index + '][key]" value="" />' +
                     '</td>' +
                     '<td><input type="text" name="' + section + '_fields[' + index + '][value]" value="" class="regular-text" placeholder="Значение поля..." /></td>' +
-                    '<td>' +
-                        '<input type="text" name="' + section + '_fields[' + index + '][condition_placeholder]" value="" class="regular-text" placeholder="{product_stock}" title="Поле будет добавлено только если указанный плейсхолдер возвращает непустое значение" />' +
-                        '<small style="display: block; color: #666; margin-top: 3px;">Например: {product_stock}</small>' +
-                    '</td>' +
                     '<td><select name="' + section + '_fields[' + index + '][type]">' +
                         '<option value="text">Text</option>' +
                         '<option value="textarea">Textarea</option>' +
@@ -577,16 +556,13 @@ function wc_avito_handle_field_settings_save() {
             $existing_key = !empty($field['key']) ? sanitize_text_field($field['key']) : '';
             // Разрешаем HTML теги в значении поля
             $field_value = isset($field['value']) ? wp_kses_post($field['value']) : '';
-            // Обрабатываем условие (плейсхолдер для условия)
-            $condition_placeholder = isset($field['condition_placeholder']) ? sanitize_text_field($field['condition_placeholder']) : '';
-
+            
             $settings['global_fields'][] = array(
                 'key' => wc_avito_generate_field_key($xml_tag, $existing_key),
                 'label' => $existing_label,
                 'xml_tag' => $xml_tag,
                 'type' => sanitize_text_field($field['type']),
                 'value' => $field_value,
-                'condition_placeholder' => $condition_placeholder,
                 'enabled' => isset($field['enabled']) && $field['enabled'] == '1',
             );
         }

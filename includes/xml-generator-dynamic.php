@@ -72,35 +72,26 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
     if (!empty($settings['global_fields'])) {
         foreach ($settings['global_fields'] as $field) {
             if (empty($field['enabled'])) continue;
-
+            
             // Получаем XML тег
             $xml_tag = !empty($field['xml_tag']) ? $field['xml_tag'] : (!empty($field['label']) ? $field['label'] : $field['key']);
-
+            
             // Пропускаем Title, если он уже был добавлен из шаблона категории
             if ($xml_tag === 'Title' && !empty($category_title_template)) {
                 continue;
             }
-
-            // Проверяем условие, если оно задано
-            if (!empty($field['condition_placeholder'])) {
-                $condition_value = wc_avito_process_placeholders($field['condition_placeholder'], $product, $category_id);
-                // Если условие не выполнено (плейсхолдер вернул пустое значение), пропускаем поле
-                if (empty($condition_value)) {
-                    continue;
-                }
-            }
-
+            
             // Значение берется из настроек поля
             $value = isset($field['value']) ? $field['value'] : '';
-
+            
             // Обрабатываем плейсхолдеры
             $value = wc_avito_process_placeholders($value, $product, $category_id);
-
+            
             // Применяем замену символов к Title и Description
             if ($xml_tag === 'Title' || $xml_tag === 'Description') {
                 $value = wc_avito_apply_character_replacements($value);
             }
-
+            
             if (!empty($value)) {
                 // Если значение содержит HTML теги, используем CDATA
                 if (preg_match('/<[^>]+>/', $value)) {
