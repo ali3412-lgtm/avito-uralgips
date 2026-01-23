@@ -157,13 +157,14 @@ function wc_avito_add_product_data_panel() {
         <div class="options_group">
             <h4 style="padding-left: 12px; margin-bottom: 10px;">Пользовательские поля товара</h4>
             <p style="padding-left: 12px; color: #666; font-size: 12px;">Добавьте индивидуальные XML-поля для этого товара. Эти поля имеют приоритет над полями категории.</p>
-            
+
             <div style="padding: 0 12px;">
                 <table class="widefat avito-product-custom-fields" style="max-width: 100%;">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">XML тег</th>
-                            <th style="width: 65%;">Значение</th>
+                            <th style="width: 20%;">XML тег</th>
+                            <th style="width: 55%;">Значение</th>
+                            <th style="width: 15%;">Тип</th>
                             <th style="width: 10%; text-align: center;">Удалить</th>
                         </tr>
                     </thead>
@@ -172,6 +173,7 @@ function wc_avito_add_product_data_panel() {
                             <?php foreach ($custom_fields as $index => $field) :
                                 $xml_tag = isset($field['xml_tag']) ? $field['xml_tag'] : '';
                                 $value = isset($field['value']) ? $field['value'] : '';
+                                $type = isset($field['type']) ? $field['type'] : 'text';
                             ?>
                                 <tr>
                                     <td style="padding: 8px;">
@@ -180,6 +182,12 @@ function wc_avito_add_product_data_panel() {
                                     <td style="padding: 8px;">
                                         <textarea name="avito_product_custom_fields[<?php echo esc_attr($index); ?>][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"><?php echo esc_textarea($value); ?></textarea>
                                     </td>
+                                    <td style="padding: 8px;">
+                                        <select name="avito_product_custom_fields[<?php echo esc_attr($index); ?>][type]" style="width: 100%;">
+                                            <option value="text" <?php selected($type, 'text'); ?>>Текст</option>
+                                            <option value="nested" <?php selected($type, 'nested'); ?>>Вложенный</option>
+                                        </select>
+                                    </td>
                                     <td style="text-align: center; padding: 8px; vertical-align: middle;">
                                         <button type="button" class="button avito-remove-product-field" title="Удалить поле" style="color: #b32d2e; font-weight: bold;">×</button>
                                     </td>
@@ -187,7 +195,7 @@ function wc_avito_add_product_data_panel() {
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr class="avito-no-product-fields">
-                                <td colspan="3" style="text-align: center; color: #777; padding: 20px;">Пока нет пользовательских полей</td>
+                                <td colspan="4" style="text-align: center; color: #777; padding: 20px;">Пока нет пользовательских полей</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -196,8 +204,20 @@ function wc_avito_add_product_data_panel() {
                     <button type="button" class="button" id="avito-add-product-field">Добавить поле</button>
                 </p>
                 <p class="description" style="font-size: 11px;">
+                    <strong>Текст:</strong> обычное поле с текстом или плейсхолдерами.<br>
+                    <strong>Вложенный:</strong> JSON структура для создания вложенных XML тегов.<br>
                     Поддерживаемые плейсхолдеры: <code>{product_name}</code>, <code>{product_sku}</code>, <code>{product_price}</code>, <code>{product_attributes_list}</code>, <code>{meta:field_name}</code> и др.
                 </p>
+                <div class="avito-nested-example" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #2271b1;">
+                    <p style="margin: 0 0 5px 0; font-weight: bold;">Пример вложенной структуры (JSON):</p>
+                    <pre style="margin: 0; font-size: 11px; background: #fff; padding: 8px; overflow-x: auto;">{
+  "Option": ["Газобетон", "Пенобетон", "Гипсокартон", "Бетонные блоки"]
+}</pre>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+                        При XML теге <code>Purpose</code> создаст:<br>
+                        <code>&lt;Purpose&gt;&lt;Option&gt;Газобетон&lt;/Option&gt;&lt;Option&gt;Пенобетон&lt;/Option&gt;...&lt;/Purpose&gt;</code>
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -208,6 +228,12 @@ function wc_avito_add_product_data_panel() {
                 </td>
                 <td style="padding: 8px;">
                     <textarea name="avito_product_custom_fields[{{data.index}}][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"></textarea>
+                </td>
+                <td style="padding: 8px;">
+                    <select name="avito_product_custom_fields[{{data.index}}][type]" style="width: 100%;">
+                        <option value="text">Текст</option>
+                        <option value="nested">Вложенный</option>
+                    </select>
                 </td>
                 <td style="text-align: center; padding: 8px; vertical-align: middle;">
                     <button type="button" class="button avito-remove-product-field" title="Удалить поле" style="color: #b32d2e; font-weight: bold;">×</button>
@@ -231,7 +257,7 @@ function wc_avito_add_product_data_panel() {
             $tableBody.on('click', '.avito-remove-product-field', function() {
                 $(this).closest('tr').remove();
                 if (!$tableBody.find('tr').length) {
-                    $tableBody.append('<tr class="avito-no-product-fields"><td colspan="3" style="text-align: center; color: #777; padding: 20px;">Пока нет пользовательских полей</td></tr>');
+                    $tableBody.append('<tr class="avito-no-product-fields"><td colspan="4" style="text-align: center; color: #777; padding: 20px;">Пока нет пользовательских полей</td></tr>');
                 }
             });
         });
@@ -312,6 +338,7 @@ function wc_avito_save_dynamic_product_fields($post_id) {
         foreach ($_POST['avito_product_custom_fields'] as $field) {
             $xml_tag = isset($field['xml_tag']) ? sanitize_text_field($field['xml_tag']) : '';
             $value = isset($field['value']) ? wp_kses_post($field['value']) : '';
+            $type = isset($field['type']) ? sanitize_text_field($field['type']) : 'text';
 
             if (empty($xml_tag) && empty($value)) {
                 continue;
@@ -320,6 +347,7 @@ function wc_avito_save_dynamic_product_fields($post_id) {
             $prepared_fields[] = array(
                 'xml_tag' => $xml_tag,
                 'value' => $value,
+                'type' => $type,
             );
         }
 

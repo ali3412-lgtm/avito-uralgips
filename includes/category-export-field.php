@@ -122,8 +122,9 @@ function wc_avito_edit_category_export_field($term) {
                 <table class="widefat avito-category-custom-fields">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">XML тег</th>
-                            <th style="width: 65%;">Значение</th>
+                            <th style="width: 20%;">XML тег</th>
+                            <th style="width: 55%;">Значение</th>
+                            <th style="width: 15%;">Тип</th>
                             <th style="width: 10%; text-align: center;">Удалить</th>
                         </tr>
                     </thead>
@@ -132,6 +133,7 @@ function wc_avito_edit_category_export_field($term) {
                             <?php foreach ($custom_fields as $index => $field) :
                                 $xml_tag = isset($field['xml_tag']) ? $field['xml_tag'] : '';
                                 $value = isset($field['value']) ? $field['value'] : '';
+                                $type = isset($field['type']) ? $field['type'] : 'text';
                             ?>
                                 <tr>
                                     <td style="padding: 10px;">
@@ -140,6 +142,12 @@ function wc_avito_edit_category_export_field($term) {
                                     <td style="padding: 10px;">
                                         <textarea name="avito_category_custom_fields[<?php echo esc_attr($index); ?>][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"><?php echo esc_textarea($value); ?></textarea>
                                     </td>
+                                    <td style="padding: 10px;">
+                                        <select name="avito_category_custom_fields[<?php echo esc_attr($index); ?>][type]" style="width: 100%;">
+                                            <option value="text" <?php selected($type, 'text'); ?>>Текст</option>
+                                            <option value="nested" <?php selected($type, 'nested'); ?>>Вложенный</option>
+                                        </select>
+                                    </td>
                                     <td style="text-align: center; padding: 10px; vertical-align: middle;">
                                         <button type="button" class="button avito-remove-custom-field" title="Удалить поле">×</button>
                                     </td>
@@ -147,7 +155,7 @@ function wc_avito_edit_category_export_field($term) {
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr class="avito-no-custom-fields">
-                                <td colspan="3" style="text-align: center; color: #777;">Пока нет пользовательских полей</td>
+                                <td colspan="4" style="text-align: center; color: #777;">Пока нет пользовательских полей</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -156,8 +164,20 @@ function wc_avito_edit_category_export_field($term) {
                     <button type="button" class="button" id="avito-add-custom-field">Добавить поле</button>
                 </p>
                 <p class="description">
+                    <strong>Текст:</strong> обычное поле с текстом или плейсхолдерами.<br>
+                    <strong>Вложенный:</strong> JSON структура для создания вложенных XML тегов.<br>
                     Примеры значений: <code>{product_attributes_list}</code>, <code>{meta:_weight}</code>, <code>В наличии</code>. Значение поддерживает HTML.
                 </p>
+                <div class="avito-nested-example" style="margin-top: 10px; padding: 10px; background: #fff; border-left: 4px solid #2271b1;">
+                    <p style="margin: 0 0 5px 0; font-weight: bold;">Пример вложенной структуры (JSON):</p>
+                    <pre style="margin: 0; font-size: 11px; background: #f9f9f9; padding: 8px; overflow-x: auto;">{
+  "Option": ["Газобетон", "Пенобетон", "Гипсокартон", "Бетонные блоки"]
+}</pre>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+                        При XML теге <code>Purpose</code> создаст:<br>
+                        <code>&lt;Purpose&gt;&lt;Option&gt;Газобетон&lt;/Option&gt;&lt;Option&gt;Пенобетон&lt;/Option&gt;...&lt;/Purpose&gt;</code>
+                    </p>
+                </div>
             </div>
         </td>
     </tr>
@@ -169,6 +189,12 @@ function wc_avito_edit_category_export_field($term) {
             </td>
             <td style="padding: 10px;">
                 <textarea name="avito_category_custom_fields[{{data.index}}][value]" rows="2" style="width: 100%;" placeholder="Значение или плейсхолдеры"></textarea>
+            </td>
+            <td style="padding: 10px;">
+                <select name="avito_category_custom_fields[{{data.index}}][type]" style="width: 100%;">
+                    <option value="text">Текст</option>
+                    <option value="nested">Вложенный</option>
+                </select>
             </td>
             <td style="text-align: center; padding: 10px; vertical-align: middle;">
                 <button type="button" class="button avito-remove-custom-field" title="Удалить поле">×</button>
@@ -192,7 +218,7 @@ function wc_avito_edit_category_export_field($term) {
         $tableBody.on('click', '.avito-remove-custom-field', function() {
             $(this).closest('tr').remove();
             if (!$tableBody.find('tr').length) {
-                $tableBody.append('<tr class="avito-no-custom-fields"><td colspan="3" style="text-align: center; color: #777;">Пока нет пользовательских полей</td></tr>');
+                $tableBody.append('<tr class="avito-no-custom-fields"><td colspan="4" style="text-align: center; color: #777;">Пока нет пользовательских полей</td></tr>');
             }
         });
     });
@@ -308,6 +334,7 @@ function wc_avito_update_category_export_field($term_id) {
         foreach ($_POST['avito_category_custom_fields'] as $field) {
             $xml_tag = isset($field['xml_tag']) ? sanitize_text_field($field['xml_tag']) : '';
             $value = isset($field['value']) ? wp_kses_post($field['value']) : '';
+            $type = isset($field['type']) ? sanitize_text_field($field['type']) : 'text';
 
             if (empty($xml_tag) && empty($value)) {
                 continue;
@@ -317,6 +344,7 @@ function wc_avito_update_category_export_field($term_id) {
                 'key' => wc_avito_generate_field_key($xml_tag),
                 'xml_tag' => $xml_tag,
                 'value' => $value,
+                'type' => $type,
             );
         }
 

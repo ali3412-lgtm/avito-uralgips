@@ -259,25 +259,48 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
     // Добавляем пользовательские поля категории (с учётом иерархии родительских категорий)
     if ($category_id) {
         $custom_fields = wc_avito_get_category_custom_fields_hierarchy($category_id);
-        
+
         if (!empty($custom_fields) && is_array($custom_fields)) {
             foreach ($custom_fields as $field) {
                 $xml_tag = isset($field['xml_tag']) ? $field['xml_tag'] : '';
                 $value = isset($field['value']) ? $field['value'] : '';
-                
+                $type = isset($field['type']) ? $field['type'] : 'text';
+
                 // Пропускаем пустые поля
                 if (empty($xml_tag) || empty($value)) {
                     continue;
                 }
-                
-                // Обрабатываем плейсхолдеры
+
+                // Обработка вложенных структур (тип nested)
+                if ($type === 'nested') {
+                    // Сначала обрабатываем плейсхолдеры в JSON строке
+                    $value = wc_avito_process_placeholders($value, $product, $category_id);
+
+                    // Декодируем JSON
+                    $nested_data = json_decode($value, true);
+
+                    if ($nested_data !== null && is_array($nested_data)) {
+                        // Создаём корневой элемент вложенной структуры
+                        $nested_parent = $ad->addChild($xml_tag);
+                        // Рекурсивно добавляем вложенные элементы
+                        foreach ($nested_data as $key => $data) {
+                            wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                        }
+                    } else {
+                        // Ошибка парсинга JSON - логируем и пропускаем
+                        error_log("WC Avito: Ошибка парсинга JSON для поля категории '$xml_tag' (Category ID: $category_id): " . json_last_error_msg());
+                    }
+                    continue; // Переходим к следующему полю
+                }
+
+                // Обрабатываем плейсхолдеры для обычных полей
                 $value = wc_avito_process_placeholders($value, $product, $category_id);
-                
+
                 // Применяем замену символов к Description
                 if ($xml_tag === 'Description') {
                     $value = wc_avito_apply_character_replacements($value);
                 }
-                
+
                 if (!empty($value)) {
                     // Специальная обработка для Description - используем CDATA и prepare_description
                     if ($xml_tag === 'Description') {
@@ -300,25 +323,48 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
     // Добавляем пользовательские поля товара (имеют приоритет над полями категории)
     if ($product) {
         $product_custom_fields = get_post_meta($product->get_id(), 'avito_product_custom_fields', true);
-        
+
         if (!empty($product_custom_fields) && is_array($product_custom_fields)) {
             foreach ($product_custom_fields as $field) {
                 $xml_tag = isset($field['xml_tag']) ? $field['xml_tag'] : '';
                 $value = isset($field['value']) ? $field['value'] : '';
-                
+                $type = isset($field['type']) ? $field['type'] : 'text';
+
                 // Пропускаем пустые поля
                 if (empty($xml_tag) || empty($value)) {
                     continue;
                 }
-                
-                // Обрабатываем плейсхолдеры
+
+                // Обработка вложенных структур (тип nested)
+                if ($type === 'nested') {
+                    // Сначала обрабатываем плейсхолдеры в JSON строке
+                    $value = wc_avito_process_placeholders($value, $product, $category_id);
+
+                    // Декодируем JSON
+                    $nested_data = json_decode($value, true);
+
+                    if ($nested_data !== null && is_array($nested_data)) {
+                        // Создаём корневой элемент вложенной структуры
+                        $nested_parent = $ad->addChild($xml_tag);
+                        // Рекурсивно добавляем вложенные элементы
+                        foreach ($nested_data as $key => $data) {
+                            wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                        }
+                    } else {
+                        // Ошибка парсинга JSON - логируем и пропускаем
+                        error_log("WC Avito: Ошибка парсинга JSON для поля товара '$xml_tag' (ID: {$product->get_id()}): " . json_last_error_msg());
+                    }
+                    continue; // Переходим к следующему полю
+                }
+
+                // Обрабатываем плейсхолдеры для обычных полей
                 $value = wc_avito_process_placeholders($value, $product, $category_id);
-                
+
                 // Применяем замену символов к Description
                 if ($xml_tag === 'Description') {
                     $value = wc_avito_apply_character_replacements($value);
                 }
-                
+
                 if (!empty($value)) {
                     // Специальная обработка для Description - используем CDATA и prepare_description
                     if ($xml_tag === 'Description') {
