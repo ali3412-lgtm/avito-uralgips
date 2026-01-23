@@ -72,26 +72,32 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
     if (!empty($settings['global_fields'])) {
         foreach ($settings['global_fields'] as $field) {
             if (empty($field['enabled'])) continue;
-            
+
             // Получаем XML тег
             $xml_tag = !empty($field['xml_tag']) ? $field['xml_tag'] : (!empty($field['label']) ? $field['label'] : $field['key']);
-            
+
             // Пропускаем Title, если он уже был добавлен из шаблона категории
             if ($xml_tag === 'Title' && !empty($category_title_template)) {
                 continue;
             }
-            
+
+            // Проверяем условие генерации поля
+            $condition = isset($field['condition']) ? $field['condition'] : '';
+            if (!wc_avito_check_field_condition($condition, $product, $category_id)) {
+                continue; // Условие не выполнено, пропускаем поле
+            }
+
             // Значение берется из настроек поля
             $value = isset($field['value']) ? $field['value'] : '';
-            
+
             // Обрабатываем плейсхолдеры
             $value = wc_avito_process_placeholders($value, $product, $category_id);
-            
+
             // Применяем замену символов к Title и Description
             if ($xml_tag === 'Title' || $xml_tag === 'Description') {
                 $value = wc_avito_apply_character_replacements($value);
             }
-            
+
             if (!empty($value)) {
                 // Если значение содержит HTML теги, используем CDATA
                 if (preg_match('/<[^>]+>/', $value)) {
@@ -269,8 +275,80 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
 }
 
 /**
+ * Проверяет выполнение условия генерации поля
+ *
+ * @param string $condition Условие в формате "{placeholder} оператор значение"
+ * @param WC_Product $product Объект товара
+ * @param int $category_id ID категории
+ * @return bool true если условие выполнено, false если нет
+ */
+function wc_avito_check_field_condition($condition, $product = null, $category_id = null) {
+    if (empty($condition)) {
+        return true; // Если условие не задано, поле всегда генерируется
+    }
+
+    // Сначала обрабатываем плейсхолдеры в условии
+    $processed_condition = wc_avito_process_placeholders($condition, $product, $category_id);
+
+    // Поддерживаемые операторы (проверяем от более длинных к коротким)
+    $operators = array('!contains', 'contains', '!=', '>=', '<=', '=', '>', '<');
+
+    $operator_found = false;
+    $left_value = '';
+    $operator = '';
+    $right_value = '';
+
+    foreach ($operators as $op) {
+        $pos = strpos($processed_condition, $op);
+        if ($pos !== false) {
+            $left_value = trim(substr($processed_condition, 0, $pos));
+            $operator = $op;
+            $right_value = trim(substr($processed_condition, $pos + strlen($op)));
+            $operator_found = true;
+            break;
+        }
+    }
+
+    // Если оператор не найден, считаем условие невыполненным
+    if (!$operator_found) {
+        error_log("WC Avito: Неверный формат условия '$condition'");
+        return false;
+    }
+
+    // Выполняем проверку в зависимости от оператора
+    switch ($operator) {
+        case '=':
+            return $left_value === $right_value;
+
+        case '!=':
+            return $left_value !== $right_value;
+
+        case '>':
+            return is_numeric($left_value) && is_numeric($right_value) && floatval($left_value) > floatval($right_value);
+
+        case '<':
+            return is_numeric($left_value) && is_numeric($right_value) && floatval($left_value) < floatval($right_value);
+
+        case '>=':
+            return is_numeric($left_value) && is_numeric($right_value) && floatval($left_value) >= floatval($right_value);
+
+        case '<=':
+            return is_numeric($left_value) && is_numeric($right_value) && floatval($left_value) <= floatval($right_value);
+
+        case 'contains':
+            return stripos($left_value, $right_value) !== false;
+
+        case '!contains':
+            return stripos($left_value, $right_value) === false;
+
+        default:
+            return false;
+    }
+}
+
+/**
  * Обработка плейсхолдеров в значении поля
- * 
+ *
  * Поддерживаемые плейсхолдеры:
  * - {product_id} - ID товара (post ID)
  * - {product_name} - Название товара

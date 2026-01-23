@@ -45,10 +45,10 @@ function wc_avito_fields_page() {
         <h1>Управление полями XML для Avito</h1>
         <p>Здесь вы можете настроить, какие поля будут использоваться при генерации XML для Avito.</p>
         
-        <!-- Информация о плейсхолдерах -->
+        <!-- Информация о плейсхолдерах и условиях -->
         <div class="notice notice-info" style="margin: 15px 0; padding: 10px;">
-            <h3 style="margin-top: 0;">📝 Доступные плейсхолдеры для полей</h3>
-            <p>В значениях полей можно использовать следующие плейсхолдеры, которые будут автоматически заменены на реальные данные:</p>
+            <h3 style="margin-top: 0;">📝 Доступные плейсхолдеры и условия генерации</h3>
+            <p>В значениях полей и условиях можно использовать следующие плейсхолдеры, которые будут автоматически заменены на реальные данные:</p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div>
                     <strong>Стандартные поля товара:</strong>
@@ -76,10 +76,23 @@ function wc_avito_fields_page() {
                     </ul>
                 </div>
             </div>
-            <p style="margin-bottom: 0;">
-                <strong>Примеры использования:</strong><br>
+            <p>
+                <strong>Примеры использования в значениях:</strong><br>
                 • <code>Товар: {product_name}, цена {product_price} руб. SKU: {product_sku}</code><br>
                 • <code>{product_name} &lt;br&gt; {product_attributes_list}</code> - название с атрибутами
+            </p>
+            <p style="margin-bottom: 0;">
+                <strong>Условия генерации полей:</strong><br>
+                В поле "Условие генерации" для глобальных полей можно указывать условия, при которых поле будет добавлено в XML.<br>
+                <strong>Поддерживаемые операторы:</strong>
+                <code>=</code> (равно), <code>!=</code> (не равно), <code>&gt;</code> (больше), <code>&lt;</code> (меньше),
+                <code>&gt;=</code> (больше или равно), <code>&lt;=</code> (меньше или равно),
+                <code>contains</code> (содержит), <code>!contains</code> (не содержит)<br>
+                <strong>Примеры условий:</strong><br>
+                • <code>{category_name}=Керамзит</code> - поле добавится только для товаров из категории "Керамзит"<br>
+                • <code>{product_price}&gt;1000</code> - поле добавится только если цена больше 1000<br>
+                • <code>{product_name} contains кирпич</code> - поле добавится если название содержит слово "кирпич"<br>
+                • <code>{meta:_stock_status}=instock</code> - поле добавится только для товаров в наличии
             </p>
         </div>
         
@@ -100,17 +113,19 @@ function wc_avito_fields_page() {
                 <thead>
                     <tr>
                         <th width="5%">Вкл.</th>
-                        <th width="20%">Название XML тега</th>
-                        <th width="30%">Значение</th>
-                        <th width="20%">Тип</th>
+                        <th width="15%">Название XML тега</th>
+                        <th width="25%">Значение</th>
+                        <th width="25%">Условие генерации</th>
+                        <th width="15%">Тип</th>
                         <th width="5%">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php 
+                    <?php
                     if (!empty($settings['global_fields'])) {
-                        foreach ($settings['global_fields'] as $index => $field): 
+                        foreach ($settings['global_fields'] as $index => $field):
                             $field_value = isset($field['value']) ? $field['value'] : '';
+                            $field_condition = isset($field['condition']) ? $field['condition'] : '';
                     ?>
                         <tr>
                             <td>
@@ -131,6 +146,10 @@ function wc_avito_fields_page() {
                                 <?php endif; ?>
                             </td>
                             <td>
+                                <input type="text" name="global_fields[<?php echo $index; ?>][condition]" value="<?php echo esc_attr($field_condition); ?>" class="regular-text" placeholder="{category_name}=Керамзит" title="Условие для генерации поля. Используйте плейсхолдеры и операторы =, !=, contains, !contains" />
+                                <small style="display: block; color: #666; margin-top: 2px;">Примеры: {category_name}=Керамзит или {product_price}>1000</small>
+                            </td>
+                            <td>
                                 <select name="global_fields[<?php echo $index; ?>][type]">
                                     <option value="text" <?php selected($field['type'], 'text'); ?>>Text</option>
                                     <option value="textarea" <?php selected($field['type'], 'textarea'); ?>>Textarea</option>
@@ -143,7 +162,7 @@ function wc_avito_fields_page() {
                                 <button type="button" class="button delete-field" data-section="global" data-index="<?php echo $index; ?>">×</button>
                             </td>
                         </tr>
-                    <?php 
+                    <?php
                         endforeach;
                     }
                     ?>
@@ -334,7 +353,7 @@ function wc_avito_fields_page() {
             var row = '';
             
             if (section === 'global') {
-                // Для глобальных полей с колонкой value
+                // Для глобальных полей с колонками value и condition
                 row = '<tr>' +
                     '<td><input type="checkbox" name="' + section + '_fields[' + index + '][enabled]" value="1" checked /></td>' +
                     '<td>' +
@@ -343,6 +362,10 @@ function wc_avito_fields_page() {
                         '<input type="hidden" name="' + section + '_fields[' + index + '][key]" value="" />' +
                     '</td>' +
                     '<td><input type="text" name="' + section + '_fields[' + index + '][value]" value="" class="regular-text" placeholder="Значение поля..." /></td>' +
+                    '<td>' +
+                        '<input type="text" name="' + section + '_fields[' + index + '][condition]" value="" class="regular-text" placeholder="{category_name}=Керамзит" title="Условие для генерации поля" />' +
+                        '<small style="display: block; color: #666; margin-top: 2px;">Примеры: {category_name}=Керамзит или {product_price}>1000</small>' +
+                    '</td>' +
                     '<td><select name="' + section + '_fields[' + index + '][type]">' +
                         '<option value="text">Text</option>' +
                         '<option value="textarea">Textarea</option>' +
@@ -556,13 +579,16 @@ function wc_avito_handle_field_settings_save() {
             $existing_key = !empty($field['key']) ? sanitize_text_field($field['key']) : '';
             // Разрешаем HTML теги в значении поля
             $field_value = isset($field['value']) ? wp_kses_post($field['value']) : '';
-            
+            // Сохраняем условие генерации
+            $field_condition = isset($field['condition']) ? sanitize_text_field($field['condition']) : '';
+
             $settings['global_fields'][] = array(
                 'key' => wc_avito_generate_field_key($xml_tag, $existing_key),
                 'label' => $existing_label,
                 'xml_tag' => $xml_tag,
                 'type' => sanitize_text_field($field['type']),
                 'value' => $field_value,
+                'condition' => $field_condition,
                 'enabled' => isset($field['enabled']) && $field['enabled'] == '1',
             );
         }
