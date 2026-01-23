@@ -40,6 +40,85 @@ function wc_avito_apply_character_replacements($text) {
 }
 
 /**
+ * Рекурсивно добавляет вложенные XML элементы из массива/JSON структуры
+ *
+ * @param SimpleXMLElement $parent Родительский XML элемент
+ * @param array|string $data Данные для добавления
+ * @param string $tag_name Имя тега (используется для массивов с числовыми ключами)
+ * @param WC_Product|null $product Объект товара для обработки плейсхолдеров
+ * @param int|null $category_id ID категории для обработки плейсхолдеров
+ */
+function wc_avito_add_nested_xml_elements($parent, $data, $tag_name = null, $product = null, $category_id = null) {
+    if (is_array($data)) {
+        // Проверяем, является ли массив списком (числовые ключи)
+        $is_list = array_keys($data) === range(0, count($data) - 1);
+
+        if ($is_list && $tag_name) {
+            // Это список элементов - создаём несколько одноимённых тегов
+            foreach ($data as $item) {
+                wc_avito_add_nested_xml_elements($parent, $item, $tag_name, $product, $category_id);
+            }
+        } else {
+            // Это ассоциативный массив - создаём вложенные теги
+            foreach ($data as $key => $value) {
+                if (is_numeric($key) && $tag_name) {
+                    // Числовой ключ - используем переданное имя тега
+                    $child = $parent->addChild($tag_name);
+                    if (is_array($value)) {
+                        foreach ($value as $subkey => $subvalue) {
+                            wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                        }
+                    } else {
+                        // Обрабатываем плейсхолдеры в значении
+                        $processed_value = wc_avito_process_placeholders((string)$value, $product, $category_id);
+                        // Устанавливаем значение элемента
+                        $dom = dom_import_simplexml($child);
+                        $dom->nodeValue = htmlspecialchars($processed_value);
+                    }
+                } else {
+                    // Строковый ключ - это имя вложенного тега
+                    if (is_array($value)) {
+                        // Проверяем, является ли это список для создания нескольких одноимённых тегов
+                        $is_value_list = array_keys($value) === range(0, count($value) - 1);
+                        if ($is_value_list) {
+                            // Создаём несколько элементов с одинаковым именем
+                            foreach ($value as $list_item) {
+                                $child = $parent->addChild($key);
+                                if (is_array($list_item)) {
+                                    foreach ($list_item as $subkey => $subvalue) {
+                                        wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                                    }
+                                } else {
+                                    $processed_value = wc_avito_process_placeholders((string)$list_item, $product, $category_id);
+                                    $dom = dom_import_simplexml($child);
+                                    $dom->nodeValue = htmlspecialchars($processed_value);
+                                }
+                            }
+                        } else {
+                            // Ассоциативный массив - один вложенный элемент
+                            $child = $parent->addChild($key);
+                            foreach ($value as $subkey => $subvalue) {
+                                wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                            }
+                        }
+                    } else {
+                        // Простое значение - создаём элемент со значением
+                        $processed_value = wc_avito_process_placeholders((string)$value, $product, $category_id);
+                        $parent->addChild($key, htmlspecialchars($processed_value));
+                    }
+                }
+            }
+        }
+    } else {
+        // Простое значение
+        if ($tag_name) {
+            $processed_value = wc_avito_process_placeholders((string)$data, $product, $category_id);
+            $parent->addChild($tag_name, htmlspecialchars($processed_value));
+        }
+    }
+}
+
+/**
  * Динамическое добавление полей в объявление
  */
 function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
@@ -90,7 +169,32 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
             // Значение берется из настроек поля
             $value = isset($field['value']) ? $field['value'] : '';
 
-            // Обрабатываем плейсхолдеры
+            // Проверяем тип поля
+            $field_type = isset($field['type']) ? $field['type'] : 'text';
+
+            // Обработка вложенных структур (тип nested)
+            if ($field_type === 'nested') {
+                // Сначала обрабатываем плейсхолдеры в JSON строке
+                $value = wc_avito_process_placeholders($value, $product, $category_id);
+
+                // Декодируем JSON
+                $nested_data = json_decode($value, true);
+
+                if ($nested_data !== null && is_array($nested_data)) {
+                    // Создаём корневой элемент вложенной структуры
+                    $nested_parent = $ad->addChild($xml_tag);
+                    // Рекурсивно добавляем вложенные элементы
+                    foreach ($nested_data as $key => $data) {
+                        wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                    }
+                } else {
+                    // Ошибка парсинга JSON - логируем и пропускаем
+                    error_log("WC Avito: Ошибка парсинга JSON для поля '$xml_tag': " . json_last_error_msg());
+                }
+                continue; // Переходим к следующему полю
+            }
+
+            // Обрабатываем плейсхолдеры для обычных полей
             $value = wc_avito_process_placeholders($value, $product, $category_id);
 
             // Применяем замену символов к Title и Description

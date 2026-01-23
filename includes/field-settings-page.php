@@ -94,6 +94,16 @@ function wc_avito_fields_page() {
                 • <code>{product_name} contains кирпич</code> - поле добавится если название содержит слово "кирпич"<br>
                 • <code>{meta:_stock_status}=instock</code> - поле добавится только для товаров в наличии
             </p>
+            <hr style="margin: 15px 0; border: none; border-top: 1px dashed #ccc;">
+            <p style="margin-bottom: 0;">
+                <strong>Вложенные XML структуры (тип Nested):</strong><br>
+                Для создания вложенных XML структур используйте тип поля <code>Nested</code>. Значение поля должно быть в формате JSON.<br>
+                <strong>Пример для PromoManualOptions:</strong><br>
+                <code style="display: block; background: #f5f5f5; padding: 8px; margin: 5px 0; font-size: 12px; white-space: pre-wrap;">{"Item": {"Region": "Санкт-Петербург", "Bid": "1000", "DailyLimit": "10000"}}</code>
+                <strong>Несколько Item:</strong><br>
+                <code style="display: block; background: #f5f5f5; padding: 8px; margin: 5px 0; font-size: 12px; white-space: pre-wrap;">{"Item": [{"Region": "Санкт-Петербург", "Bid": "1000"}, {"Region": "Москва", "Bid": "1500"}]}</code>
+                В JSON также можно использовать плейсхолдеры: <code>{"Item": {"Region": "{term_meta:avito_region}"}}</code>
+            </p>
         </div>
         
         <div class="notice notice-success inline" style="margin: 15px 0; padding: 10px;">
@@ -156,6 +166,7 @@ function wc_avito_fields_page() {
                                     <option value="number" <?php selected($field['type'], 'number'); ?>>Number</option>
                                     <option value="date" <?php selected($field['type'], 'date'); ?>>Date</option>
                                     <option value="checkbox" <?php selected($field['type'], 'checkbox'); ?>>Checkbox</option>
+                                    <option value="nested" <?php selected($field['type'], 'nested'); ?>>Nested (JSON)</option>
                                 </select>
                             </td>
                             <td>
@@ -372,6 +383,7 @@ function wc_avito_fields_page() {
                         '<option value="number">Number</option>' +
                         '<option value="date">Date</option>' +
                         '<option value="checkbox">Checkbox</option>' +
+                        '<option value="nested">Nested (JSON)</option>' +
                     '</select></td>' +
                     '<td><button type="button" class="button delete-field" data-section="' + section + '" data-index="' + index + '">×</button></td>' +
                     '</tr>';
