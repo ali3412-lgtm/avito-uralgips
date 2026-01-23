@@ -184,8 +184,21 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
                     // Создаём корневой элемент вложенной структуры
                     $nested_parent = $ad->addChild($xml_tag);
                     // Рекурсивно добавляем вложенные элементы
+                    // Вызываем функцию для каждого элемента верхнего уровня JSON
                     foreach ($nested_data as $key => $data) {
-                        wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                        // Создаем дочерний элемент с именем $key
+                        $child = $nested_parent->addChild($key);
+                        // Если значение - массив, обрабатываем его рекурсивно
+                        if (is_array($data)) {
+                            foreach ($data as $subkey => $subvalue) {
+                                wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                            }
+                        } else {
+                            // Простое значение - устанавливаем его
+                            $processed_value = wc_avito_process_placeholders((string)$data, $product, $category_id);
+                            $dom = dom_import_simplexml($child);
+                            $dom->nodeValue = htmlspecialchars($processed_value);
+                        }
                     }
                 } else {
                     // Ошибка парсинга JSON - логируем и пропускаем
@@ -283,8 +296,21 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
                         // Создаём корневой элемент вложенной структуры
                         $nested_parent = $ad->addChild($xml_tag);
                         // Рекурсивно добавляем вложенные элементы
+                        // Вызываем функцию для каждого элемента верхнего уровня JSON
                         foreach ($nested_data as $key => $data) {
-                            wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                            // Создаем дочерний элемент с именем $key
+                            $child = $nested_parent->addChild($key);
+                            // Если значение - массив, обрабатываем его рекурсивно
+                            if (is_array($data)) {
+                                foreach ($data as $subkey => $subvalue) {
+                                    wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                                }
+                            } else {
+                                // Простое значение - устанавливаем его
+                                $processed_value = wc_avito_process_placeholders((string)$data, $product, $category_id);
+                                $dom = dom_import_simplexml($child);
+                                $dom->nodeValue = htmlspecialchars($processed_value);
+                            }
                         }
                     } else {
                         // Ошибка парсинга JSON - логируем и пропускаем
@@ -347,8 +373,21 @@ function wc_avito_add_dynamic_fields($ad, $product, $category_id) {
                         // Создаём корневой элемент вложенной структуры
                         $nested_parent = $ad->addChild($xml_tag);
                         // Рекурсивно добавляем вложенные элементы
+                        // Вызываем функцию для каждого элемента верхнего уровня JSON
                         foreach ($nested_data as $key => $data) {
-                            wc_avito_add_nested_xml_elements($nested_parent, $data, $key, $product, $category_id);
+                            // Создаем дочерний элемент с именем $key
+                            $child = $nested_parent->addChild($key);
+                            // Если значение - массив, обрабатываем его рекурсивно
+                            if (is_array($data)) {
+                                foreach ($data as $subkey => $subvalue) {
+                                    wc_avito_add_nested_xml_elements($child, $subvalue, $subkey, $product, $category_id);
+                                }
+                            } else {
+                                // Простое значение - устанавливаем его
+                                $processed_value = wc_avito_process_placeholders((string)$data, $product, $category_id);
+                                $dom = dom_import_simplexml($child);
+                                $dom->nodeValue = htmlspecialchars($processed_value);
+                            }
                         }
                     } else {
                         // Ошибка парсинга JSON - логируем и пропускаем
