@@ -12,6 +12,7 @@ avito_products.xml
 .idea/
 *.swp
 *.swo
+.agent
 *~
 
 # Temporary files
