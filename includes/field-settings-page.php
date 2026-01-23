@@ -589,8 +589,17 @@ function wc_avito_handle_field_settings_save() {
             $xml_tag = sanitize_text_field($field['xml_tag']);
             $existing_label = !empty($field['label']) ? sanitize_text_field($field['label']) : $xml_tag;
             $existing_key = !empty($field['key']) ? sanitize_text_field($field['key']) : '';
-            // Разрешаем HTML теги в значении поля
-            $field_value = isset($field['value']) ? wp_kses_post($field['value']) : '';
+            $field_type = sanitize_text_field($field['type']);
+
+            // Для типа nested сохраняем JSON как есть (без экранирования)
+            // Для остальных типов разрешаем HTML теги
+            if ($field_type === 'nested') {
+                // Убираем слэши и сохраняем чистый JSON
+                $field_value = isset($field['value']) ? wp_unslash($field['value']) : '';
+            } else {
+                $field_value = isset($field['value']) ? wp_kses_post($field['value']) : '';
+            }
+
             // Сохраняем условие генерации
             $field_condition = isset($field['condition']) ? sanitize_text_field($field['condition']) : '';
 
@@ -598,7 +607,7 @@ function wc_avito_handle_field_settings_save() {
                 'key' => wc_avito_generate_field_key($xml_tag, $existing_key),
                 'label' => $existing_label,
                 'xml_tag' => $xml_tag,
-                'type' => sanitize_text_field($field['type']),
+                'type' => $field_type,
                 'value' => $field_value,
                 'condition' => $field_condition,
                 'enabled' => isset($field['enabled']) && $field['enabled'] == '1',
